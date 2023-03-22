@@ -97,7 +97,7 @@ function ImportWallet() {
                             const isSelect = !(action && action === 'back')
                             if (type === 'mnemonic') {
                                 const mnemonic = text.trim()
-                                // dispatch(createWallet(mnemonic, isSelect))
+                                dispatch(createWallet(mnemonic, isSelect) as any)
                             } else if (type === 'privateKey') {
                                 const privateKey = text.trim()
                                 // dispatch(importWalletByPrivateKey(privateKey, chain, isSelect))

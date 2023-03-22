@@ -20,16 +20,16 @@ const walletSlice = createSlice({
     name: "wallet",
     initialState,
     reducers: {
-        createWallet: (state, action: PayloadAction<HDWallet[]>) => {
+        CREATE_WALLET: (state, action: PayloadAction<HDWallet[]>) => {
             state.wallets = [ ...state.wallets, ...action.payload ]
         },
-        addChildWallet: (state, action: PayloadAction<HDWallet[]>) => {
+        ADD_CHILD_WALLET: (state, action: PayloadAction<HDWallet[]>) => {
             state.wallets = [ ...state.wallets, ...action.payload ]
         },
-        changeWallet: (state, action: PayloadAction<HDWallet>) => {
+        CHANGE_WALLET: (state, action: PayloadAction<HDWallet>) => {
             state.selectedWallet  = action.payload
         },
-        setWallet: (state, action: PayloadAction<HDWallet>) => {
+        SET_WALLET: (state, action: PayloadAction<HDWallet>) => {
             const wallet: HDWallet = action.payload
             for (let i = 0; i < state.wallets.length; i++) {
                 if (wallet.publicKey === state.wallets[i].publicKey) {
@@ -38,38 +38,38 @@ const walletSlice = createSlice({
             }
             state.wallets = [ ...state.wallets ]
         },
-        delWallet: (state, action: PayloadAction<HDWallet>) => {
+        DEL_WALLET: (state, action: PayloadAction<HDWallet>) => {
             // state.wallets = { ...action.payload }
         },
-        clearWallet: (state) => {
+        CLEAR_WALLET: (state) => {
             state = { ...initialState }
         },
-        setTokens: (state, action: PayloadAction<ContractToken[]>) => {
+        SET_TOKEN: (state, action: PayloadAction<ContractToken[]>) => {
             state.tokens = [ ...action.payload ]
         },
-        setNetworks: (state, action: PayloadAction<Network[]>) => {
+        SET_NETWORK: (state, action: PayloadAction<Network[]>) => {
             state.networks = [ ...action.payload ]
         },
-        setSelectedNetwork: (state, action: PayloadAction<Network>) => {
+        SET_SELECTED_NETWORK: (state, action: PayloadAction<Network>) => {
             state.selectedNetwork = { ...action.payload }
         },
-        resetNetworkType: (state) => {
+        RESET_NETWORK_TYPE: (state) => {
             state = { ...initialState }
         }
     },
 })
 
 export const { 
-    createWallet, 
-    addChildWallet, 
-    changeWallet,
-    setWallet,
-    delWallet,
-    clearWallet,
-    setTokens,
-    setNetworks,
-    setSelectedNetwork,
-    resetNetworkType
+    CREATE_WALLET, 
+    ADD_CHILD_WALLET, 
+    CHANGE_WALLET,
+    SET_WALLET,
+    DEL_WALLET,
+    CLEAR_WALLET,
+    SET_TOKEN,
+    SET_NETWORK,
+    SET_SELECTED_NETWORK,
+    RESET_NETWORK_TYPE
 } = walletSlice.actions
 export default walletSlice.reducer
 

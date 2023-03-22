@@ -1,21 +1,12 @@
 import { Contract, ethers, Wallet } from "ethers"
-import TronWeb from 'tronweb'
+// import TronWeb from 'tronweb'
 import { Dispatch, AnyAction } from "redux"
-import axios from 'axios'
 import ABI from "../../config/ABI"
 import { createWalletByMnemonic } from "../../utils"
 import { createWalletByPrivateKey, deriveWallet } from "../../utils/wallet"
-import { 
-    ADD_TOKEN, 
-    ADD_CHILD_WALLET, 
-    CHANGE_WALLET, 
-    CREATE_WALLET, 
-    DEL_TOKEN,
-    SET_TOKEN,
-    SET_NETWORK,
-    SET_SELECTED_NETWORK
-} from "../constants"
 import Metabit from "../../api/Metabit"
+import { ADD_CHILD_WALLET, CHANGE_WALLET, CREATE_WALLET, SET_NETWORK, SET_SELECTED_NETWORK, SET_TOKEN } from "../reducers/walletSlice"
+import { ThunkAction, ThunkDispatch } from "@reduxjs/toolkit"
 
 // const engine = WalletEngine.getInstance()
 /**
@@ -23,27 +14,19 @@ import Metabit from "../../api/Metabit"
  * @param mnemonic 
  * @returns 
  */
-export const createWallet = (mnemonic?: string, selected?: boolean) => {
-    return (dispatch: Dispatch<AnyAction>, getState: any) => {
+export const createWallet = (mnemonic?: string, selected?: boolean): ThunkAction<Promise<void>, {}, {}, AnyAction> => {
+    return async (dispatch: ThunkDispatch<{}, {}, AnyAction>, getState: any): Promise<void> => {
         const networks: Network[] = getState().wallet.networks
+        console.log('networks: ', networks)
         const wallets: HDWallet[] = createWalletByMnemonic(mnemonic)
-        dispatch({
-            type: CREATE_WALLET,
-            payload: wallets
-        })
+        dispatch(CREATE_WALLET(wallets))
         if (selected) {
             const wallet = wallets[1]  // 默认选择 Ethereum 钱包
-            dispatch({
-                type: CHANGE_WALLET,
-                payload: wallet
-            })
+            dispatch(CHANGE_WALLET(wallet))
             for (let i = 0; i < networks.length; i++) {
                 const network = networks[i]
                 if (wallet.chain === network.shortName) {
-                    dispatch({
-                        type: SET_SELECTED_NETWORK,
-                        payload: network
-                    })
+                    dispatch(SET_SELECTED_NETWORK(network))
                 }
             }
         }
@@ -68,10 +51,7 @@ export const addChildWallet = (wallet: HDWallet, chain: string) => {
             }
         }
         const child = deriveWallet(wallet, chain, index)
-        dispatch({
-            type: ADD_CHILD_WALLET,
-            payload: [child]
-        })
+        dispatch(ADD_CHILD_WALLET([child]))
     }
 }
 
@@ -91,10 +71,7 @@ export const importWalletByPrivateKey = (privateKey: string, chain: string, sele
             index = maxIndex + 1
         }
         const wallet: HDWallet = createWalletByPrivateKey(privateKey, chain, index)
-        dispatch({
-            type: CREATE_WALLET,
-            payload: [wallet]
-        })
+        dispatch(CREATE_WALLET([wallet]))
         if (selected) {
             dispatch({
                 type: CHANGE_WALLET,
@@ -103,10 +80,7 @@ export const importWalletByPrivateKey = (privateKey: string, chain: string, sele
             for (let i = 0; i < networks.length; i++) {
                 const network = networks[i]
                 if (wallet.chain === network.shortName) {
-                    dispatch({
-                        type: SET_SELECTED_NETWORK,
-                        payload: network
-                    })
+                    dispatch(SET_SELECTED_NETWORK(network))
                 }
             }
         }
@@ -124,10 +98,7 @@ export const changeWallet = (wallet: HDWallet) => {
         for (let i = 0; i < networks.length; i++) {
             const network = networks[i]
             if (wallet.chain === network.shortName) {
-                dispatch({
-                    type: SET_SELECTED_NETWORK,
-                    payload: network
-                })
+                dispatch(SET_SELECTED_NETWORK(network))
             }
         }
     }
@@ -143,7 +114,7 @@ export const addToken = (token: ContractToken) => {
         const tokens: ContractToken[] = getState().wallet.tokens
         const symbolNetworks: string[] = tokens.map(item => item.symbol + item.network)
         if (!symbolNetworks.includes(token.symbol + token.network)) {
-            dispatch({ type: ADD_TOKEN, payload: token })
+            // dispatch(ADD_TOKEN(token))
         }
     }
 }
@@ -157,7 +128,7 @@ export const delToken = (token: ContractToken) => {
     return (dispatch: Dispatch<AnyAction>, getState: any) => {
         const tokens: ContractToken[] = getState().wallet.tokens
         const list = tokens.filter(item => (item.symbol + item.network) != (token.symbol + token.network))
-        dispatch({ type: DEL_TOKEN, payload: list })
+        // dispatch({ type: DEL_TOKEN, payload: list })
     }
 }
 
@@ -174,7 +145,7 @@ export const setToken = (token: ContractToken) => {
                 tokens[i].isSelect = true
             }
         }
-        dispatch({ type: SET_TOKEN, payload: tokens })
+        dispatch(SET_TOKEN(tokens))
     }
 }
 
@@ -198,7 +169,7 @@ export const getTokens = () => {
                 }
             }
             // tokens.sort(compare('sort'))
-            dispatch({ type: SET_TOKEN, payload: tokens })
+            dispatch(SET_TOKEN(tokens))
         })
     }
 }
@@ -220,7 +191,6 @@ export const getNetworks = () => {
         const networks: Network[] = getState().wallet.networks
         const selectedNetwork: Network = getState().wallet.selectedNetwork
         const networkNames: string[] = networks.map(item => item.shortName)
-        // dispatch({ type: SET_NETWORK, payload: [] })
         Metabit.getNetworks().then(res => {
             const networkList = res.data.data as Network[]
             for (let i = 0; i < networkList.length; i++) {
@@ -235,9 +205,9 @@ export const getNetworks = () => {
                     }
                 }
             }
-            dispatch({ type: SET_NETWORK, payload: networks })
+            dispatch(SET_NETWORK(networks))
             if (!selectedNetwork || !selectedNetwork.name) {
-                dispatch({ type: SET_SELECTED_NETWORK, payload: networks[0] })
+                dispatch(SET_SELECTED_NETWORK(networks[0]))
             }
         })
     }
@@ -245,10 +215,7 @@ export const getNetworks = () => {
 
 export const setNetworkType = (network: Network) => {
     return (dispatch: Dispatch<AnyAction>) => {
-        dispatch({
-            type: SET_SELECTED_NETWORK,
-            payload: network
-        })
+        dispatch(SET_SELECTED_NETWORK(network))
     }
 }
 
@@ -273,26 +240,26 @@ export const getBalance = (cb?: () => void) => {
                 }
             }
         } else if (selectedWallet.chain === 'Tron' && selectedNetwork.hdIndex === 195) {
-            const privateKey = selectedWallet.privateKey.replace(/^(0x)/, '')
-            const tronWeb = new TronWeb({ 
-                fullHost: selectedNetwork.apiUrl, 
-                solidityNode: selectedNetwork.apiUrl, 
-                privateKey 
-            })
-            for (let i = 0; i < tokens.length; i++) {
-                if (tokens[i].isSelect && tokens[i].network === selectedNetwork.shortName) {
-                    if (tokens[i].address === '0x0') {
-                        const res = await tronWeb.trx.getUnconfirmedBalance(selectedWallet.address)
-                        tokens[i].balance = +tronWeb.fromSun(res)
-                    } else {
-                        const contract = await tronWeb.contract(ABI[tokens[i].chainType], tokens[i].address)
-                        const res = await contract.balanceOf(selectedWallet.address).call()
-                        tokens[i].balance = tronWeb.fromSun(res.toString())
-                    }
-                }
-            }
+            // const privateKey = selectedWallet.privateKey.replace(/^(0x)/, '')
+            // const tronWeb = new TronWeb({ 
+            //     fullHost: selectedNetwork.apiUrl, 
+            //     solidityNode: selectedNetwork.apiUrl, 
+            //     privateKey 
+            // })
+            // for (let i = 0; i < tokens.length; i++) {
+            //     if (tokens[i].isSelect && tokens[i].network === selectedNetwork.shortName) {
+            //         if (tokens[i].address === '0x0') {
+            //             const res = await tronWeb.trx.getUnconfirmedBalance(selectedWallet.address)
+            //             tokens[i].balance = +tronWeb.fromSun(res)
+            //         } else {
+            //             const contract = await tronWeb.contract(ABI[tokens[i].chainType], tokens[i].address)
+            //             const res = await contract.balanceOf(selectedWallet.address).call()
+            //             tokens[i].balance = tronWeb.fromSun(res.toString())
+            //         }
+            //     }
+            // }
         }
-        dispatch({ type: SET_TOKEN, payload: tokens })
+        dispatch(SET_TOKEN(tokens))
         cb && cb()
     }
 }
