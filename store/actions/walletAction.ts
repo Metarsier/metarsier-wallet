@@ -1,5 +1,5 @@
 import { Contract, ethers, Wallet } from "ethers"
-// import TronWeb from 'tronweb'
+import TronWeb from 'tronweb'
 import { Dispatch, AnyAction } from "redux"
 import ABI from "../../config/ABI"
 import { createWalletByMnemonic } from "../../utils"
@@ -10,14 +10,13 @@ import { ThunkAction, ThunkDispatch } from "@reduxjs/toolkit"
 
 // const engine = WalletEngine.getInstance()
 /**
- * 创建root钱包，默认派生btc和eth钱包地址
+ * 创建root钱包，默认派生btc和eth钱包地址 grit apology region ceiling merit napkin flag duty decrease resource art palace
  * @param mnemonic 
  * @returns 
  */
 export const createWallet = (mnemonic?: string, selected?: boolean): ThunkAction<Promise<void>, {}, {}, AnyAction> => {
     return async (dispatch: ThunkDispatch<{}, {}, AnyAction>, getState: any): Promise<void> => {
         const networks: Network[] = getState().wallet.networks
-        console.log('networks: ', networks)
         const wallets: HDWallet[] = createWalletByMnemonic(mnemonic)
         dispatch(CREATE_WALLET(wallets))
         if (selected) {
@@ -188,26 +187,17 @@ function compare(p: string){ //这是比较函数
  */
 export const getNetworks = () => {
     return (dispatch: Dispatch<AnyAction>, getState: any) => {
-        const networks: Network[] = getState().wallet.networks
         const selectedNetwork: Network = getState().wallet.selectedNetwork
-        const networkNames: string[] = networks.map(item => item.shortName)
         Metabit.getNetworks().then(res => {
             const networkList = res.data.data as Network[]
-            for (let i = 0; i < networkList.length; i++) {
-                const network = networkList[i]
-                if (!networkNames.includes(network.shortName)) {
-                    networks.push(network)
-                } else {
-                    for (let j = 0; j < networks.length; j++) {
-                        if (networks[j].shortName === network.shortName) {
-                            networks[j].apiUrl = network.apiUrl
-                        }
-                    }
+            dispatch(SET_NETWORK(networkList))
+            if (!selectedNetwork || !selectedNetwork.shortName) {
+                dispatch(SET_SELECTED_NETWORK(networkList[0]))
+            } else {
+                const networkNames = networkList.map((network: Network) => network.shortName)
+                if (!networkNames.includes(selectedNetwork.shortName)) {
+                    dispatch(SET_SELECTED_NETWORK(networkList[0]))
                 }
-            }
-            dispatch(SET_NETWORK(networks))
-            if (!selectedNetwork || !selectedNetwork.name) {
-                dispatch(SET_SELECTED_NETWORK(networks[0]))
             }
         })
     }
@@ -224,8 +214,8 @@ export const getBalance = (cb?: () => void) => {
         const selectedNetwork: Network = getState().wallet.selectedNetwork
         const selectedWallet: HDWallet = getState().wallet.selectedWallet
         const tokens: ContractToken[] = getState().wallet.tokens
-        if (selectedWallet.chain === 'Ethereum' && selectedNetwork.hdIndex === 60) {
-            const provider = new ethers.providers.JsonRpcProvider(selectedNetwork.apiUrl)
+        if (selectedWallet.chain === 'Ethereum' && selectedNetwork.chainType === 60) {
+            const provider = new ethers.providers.JsonRpcProvider(selectedNetwork.api)
             const wallet = new Wallet(selectedWallet.privateKey, provider)
             for (let i = 0; i < tokens.length; i++) {
                 if (tokens[i].isSelect && tokens[i].network === selectedNetwork.shortName) {
@@ -239,25 +229,25 @@ export const getBalance = (cb?: () => void) => {
                     }
                 }
             }
-        } else if (selectedWallet.chain === 'Tron' && selectedNetwork.hdIndex === 195) {
-            // const privateKey = selectedWallet.privateKey.replace(/^(0x)/, '')
-            // const tronWeb = new TronWeb({ 
-            //     fullHost: selectedNetwork.apiUrl, 
-            //     solidityNode: selectedNetwork.apiUrl, 
-            //     privateKey 
-            // })
-            // for (let i = 0; i < tokens.length; i++) {
-            //     if (tokens[i].isSelect && tokens[i].network === selectedNetwork.shortName) {
-            //         if (tokens[i].address === '0x0') {
-            //             const res = await tronWeb.trx.getUnconfirmedBalance(selectedWallet.address)
-            //             tokens[i].balance = +tronWeb.fromSun(res)
-            //         } else {
-            //             const contract = await tronWeb.contract(ABI[tokens[i].chainType], tokens[i].address)
-            //             const res = await contract.balanceOf(selectedWallet.address).call()
-            //             tokens[i].balance = tronWeb.fromSun(res.toString())
-            //         }
-            //     }
-            // }
+        } else if (selectedWallet.chain === 'Tron' && selectedNetwork.chainType === 195) {
+            const privateKey = selectedWallet.privateKey.replace(/^(0x)/, '')
+            const tronWeb = new TronWeb({ 
+                fullHost: selectedNetwork.api, 
+                solidityNode: selectedNetwork.api, 
+                privateKey 
+            })
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokens[i].isSelect && tokens[i].network === selectedNetwork.shortName) {
+                    if (tokens[i].address === '0x0') {
+                        const res = await tronWeb.trx.getUnconfirmedBalance(selectedWallet.address)
+                        tokens[i].balance = +tronWeb.fromSun(res)
+                    } else {
+                        const contract = await tronWeb.contract(ABI[tokens[i].chainType], tokens[i].address)
+                        const res = await contract.balanceOf(selectedWallet.address).call()
+                        tokens[i].balance = tronWeb.fromSun(res.toString())
+                    }
+                }
+            }
         }
         dispatch(SET_TOKEN(tokens))
         cb && cb()

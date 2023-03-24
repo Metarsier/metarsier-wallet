@@ -29,8 +29,8 @@ function ImportWallet() {
                     style={tw`w-12 flex justify-center items-center`}>
                     <Icon 
                         name="chevron-left-outline" 
-                        width={36} 
-                        height={36} 
+                        width={30} 
+                        height={30} 
                         fill={tw.color(`purple-600`)}
                     />
                 </Pressable>
@@ -92,7 +92,7 @@ function ImportWallet() {
                 
                 <Pressable 
                     disabled={!text.trim()}
-                    onPress={() => {
+                    onTouchStart={() => {
                         try {
                             const isSelect = !(action && action === 'back')
                             if (type === 'mnemonic') {
@@ -100,7 +100,7 @@ function ImportWallet() {
                                 dispatch(createWallet(mnemonic, isSelect) as any)
                             } else if (type === 'privateKey') {
                                 const privateKey = text.trim()
-                                // dispatch(importWalletByPrivateKey(privateKey, chain, isSelect))
+                                dispatch(importWalletByPrivateKey(privateKey, chain, isSelect) as any)
                             }
                             if (action && action === 'back') {
                                 navigation.goBack()

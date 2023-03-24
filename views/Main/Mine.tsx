@@ -2,7 +2,7 @@ import { ParamListBase, useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import React from "react"
 import { Alert, Pressable, Text, View } from "react-native"
-// import Icon from "react-native-vector-icons/Ionicons"
+import { Icon } from 'react-native-eva-icons'
 import { useDispatch } from 'react-redux'
 import tw from "twrnc"
 import { logout } from "../../store/actions/userAction"
@@ -18,21 +18,23 @@ function Mine() {
                     onPress={() => navigation.push('wallets')}>
                     <View style={tw`flex flex-row items-center p-4 bg-white mb-2`}>
                         <View style={tw`w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center`}>
-                            {/* <Icon 
-                                name="folder-open" 
-                                size={20}
-                                color={tw.color('gray-600')}
-                            /> */}
+                            <Icon 
+                                name="folder" 
+                                width={20} 
+                                height={20} 
+                                fill={tw.color('gray-600')} 
+                            />
                         </View>
                         <View style={tw`flex-1 pl-4`}>
                             <Text style={tw`text-black text-lg`}>钱包管理</Text>
                         </View>
                         <View style={tw`w-8 h-8 flex justify-center items-center`}>
-                            {/* <Icon 
-                                name="chevron-forward" 
-                                size={20}
-                                color={tw.color('purple-600')}
-                            /> */}
+                            <Icon 
+                                name="chevron-right-outline" 
+                                width={30} 
+                                height={30} 
+                                fill={tw.color('purple-600')} 
+                            />
                         </View>
                     </View>
                 </Pressable>
@@ -47,8 +49,8 @@ function Mine() {
                             {
                                 text: "确定",
                                 onPress: () => {
-                                    // dispatch(logout())
-                                    // navigation.navigate('entry')
+                                    dispatch(logout() as any)
+                                    navigation.navigate('entry')
                                 }
                             }
                         ])

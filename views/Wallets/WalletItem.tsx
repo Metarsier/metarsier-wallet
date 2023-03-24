@@ -3,7 +3,7 @@ import { Image, Pressable, Text, View } from "react-native"
 import { ParamListBase, useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import tw from "twrnc"
-// import Icon from "react-native-vector-icons/Ionicons"
+import { Icon } from 'react-native-eva-icons'
 import { CHAIN_MAP } from "../../config"
 
 
@@ -51,11 +51,12 @@ function WalletItem({ wallet }: WalletItemProps) {
                 </Text>
             </View>
             <View style={tw`w-10 h-8 flex justify-center items-center`}>
-                {/* <Icon 
-                    name="chevron-forward" 
-                    size={20}
-                    color={getColor('purple-600')}
-                /> */}
+                <Icon 
+                    name="chevron-right-outline" 
+                    width={30} 
+                    height={30} 
+                    fill={tw.color('purple-600')} 
+                />
             </View>
         </Pressable>
     )

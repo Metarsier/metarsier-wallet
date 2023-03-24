@@ -3,7 +3,7 @@ import { Platform, Pressable, StatusBar, Text, useColorScheme, View } from "reac
 import { useSelector, useDispatch } from 'react-redux'
 import { ParamListBase, useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-// import Icon from 'react-native-vector-icons/Ionicons'
+import { Icon } from 'react-native-eva-icons'
 import tw from "twrnc"
 import { RootState } from "../../store"
 import { setNetworkType } from "../../store/actions/walletAction"
@@ -15,7 +15,7 @@ function Networks() {
     const selectedNetwork: Network = useSelector((state: RootState) => state.wallet.selectedNetwork)
     const selectedWallet: HDWallet = useSelector((state: RootState) => state.wallet.selectedWallet)
     const networks: Network[] = useSelector((state: RootState) => {
-        return state.wallet.networks.filter((item: Network) => item.hdIndex === selectedWallet.type)
+        return state.wallet.networks.filter((item: Network) => item.chainType === selectedWallet.type)
     })
 
     return (
@@ -31,7 +31,12 @@ function Networks() {
                 <Pressable 
                     onPress={() => navigation.goBack()}
                     style={tw`w-14 flex justify-center items-center`}>
-                    {/* <Icon name="close" size={26} color={getColor('purple-600')} /> */}
+                    <Icon 
+                        name="close" 
+                        width={26} 
+                        height={26} 
+                        fill={tw.color('purple-600')} 
+                    />
                 </Pressable>
             </View>
             <View style={tw`p-4`}>
@@ -40,7 +45,7 @@ function Networks() {
                         <Pressable 
                             key={item.name} 
                             onPress={() => {
-                                // dispatch(setNetworkType(item))
+                                dispatch(setNetworkType(item) as any)
                                 navigation.goBack()
                             }}
                             style={tw`flex flex-row bg-white p-4 rounded-md ${i === 0 ? '' : 'mt-3'}`}>
@@ -48,11 +53,12 @@ function Networks() {
                                 {item.name}
                             </Text>
                             <View style={tw`w-8 h-8 flex justify-center items-center`}>
-                                {/* <Icon 
-                                    name="checkmark-circle" 
-                                    size={20}
-                                    color={getColor(`${selectedNetwork.name === item.name ? 'green-600' : 'gray-200'}`)}
-                                /> */}
+                                <Icon 
+                                    name="checkmark-circle-2" 
+                                    width={20}
+                                    height={20}
+                                    fill={tw.color(`${selectedNetwork.name === item.name ? 'green-600' : 'gray-200'}`)}
+                                />
                             </View>
                         </Pressable>
                     ))

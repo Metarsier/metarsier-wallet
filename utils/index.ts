@@ -2,6 +2,7 @@ import Decimal from 'decimal.js-light'
 import { Buffer } from "buffer"
 import { createHDWallet, deriveWallet } from './wallet'
 import { store } from '../store'
+import { randomBytes } from 'ethers/lib/utils'
 
 export const hideAddress = (address: string) => {
     const first = address.substr(0, 10)
@@ -36,6 +37,10 @@ export function createWalletByMnemonic(mnemonic?: string): HDWallet[] {
     // 默认创建以太坊钱包和波场
     // const btc = deriveWallet(root, 'Bitcoin')
     const eth = deriveWallet(root, 'Ethereum')
-    // const trx = deriveWallet(root, 'Tron')
-    return [root, eth]
+    const trx = deriveWallet(root, 'Tron')
+    return [root, eth, trx]
+}
+
+export function uuid(size: number = 16) {
+    return Buffer.from(randomBytes(size)).toString('hex')
 }

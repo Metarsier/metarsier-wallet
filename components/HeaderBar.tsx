@@ -1,7 +1,7 @@
 import React from "react"
 import { Platform, Pressable, StatusBar, Text, useColorScheme, View } from "react-native"
 import tw from "twrnc"
-// import Icon from "react-native-vector-icons/Ionicons"
+import { Icon } from 'react-native-eva-icons'
 import { ParamListBase, useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
@@ -43,7 +43,12 @@ function HeaderBar({ title = '', backgroundColor = '#ffffff', color = '#000000',
                         <Pressable 
                             onPress={() => navigation.goBack()}
                             style={tw`w-full h-full flex justify-center items-center`}>
-                            {/* <Icon name="chevron-back" size={24} color={color} /> */}
+                            <Icon 
+                                name="chevron-left-outline" 
+                                width={30} 
+                                height={30} 
+                                fill={color} 
+                            />
                         </Pressable>
                     }
                 </View>

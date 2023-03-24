@@ -8,7 +8,7 @@ import Toast from 'react-native-root-toast'
 import tw from "twrnc"
 import { useDispatch, useSelector } from "react-redux"
 import QRCode from 'react-native-qrcode-svg'
-// import Icon from "react-native-vector-icons/Ionicons"
+import { Icon } from 'react-native-eva-icons'
 import Modal from "react-native-modal"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 import HeaderBar from "../../components/HeaderBar"
@@ -62,7 +62,12 @@ function WalletInfo() {
                                 ])
                             }}
                             style={tw`w-full h-full flex items-center justify-center`}>
-                            {/* <Icon name="trash-outline" size={20} color={'#ffffff'} /> */}
+                            <Icon 
+                                name="trash-outline" 
+                                width={20} 
+                                height={20} 
+                                fill={'#ffffff'} 
+                            />
                         </Pressable>
                     }
                 />
@@ -94,11 +99,12 @@ function WalletInfo() {
                                         setShowEditAliasModal(true)
                                     }}
                                     style={tw`w-10 flex justify-center items-center`}>
-                                    {/* <Icon 
-                                        name="create-outline" 
-                                        size={20}
-                                        color={getColor('purple-600')}
-                                    /> */}
+                                    <Icon 
+                                        name="edit-2-outline" 
+                                        width={20} 
+                                        height={20} 
+                                        fill={tw.color('purple-600')} 
+                                    />
                                 </Pressable>
                             </View>
                             <View 
@@ -123,7 +129,7 @@ function WalletInfo() {
                                     { wallet.address }
                                 </Text>
                             </View>
-                            <View
+                            {/* <View
                                 style={{
                                     ...tw`relative bg-white py-3 px-3`,
                                     borderColor: '#ddd',
@@ -160,7 +166,7 @@ function WalletInfo() {
                                         {wallet.compressPublicKey}
                                     </Text>
                                 </Pressable>
-                            </View>
+                            </View> */}
                             <View
                                 style={{
                                     ...tw`relative bg-white py-3 px-3`,

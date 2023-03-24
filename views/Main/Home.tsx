@@ -13,7 +13,7 @@ import { getDefaultHeaderHeight } from '@react-navigation/elements'
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 import Decimal from 'decimal.js-light'
 import { useSelector, useDispatch } from 'react-redux'
-// import Icon from 'react-native-vector-icons/Ionicons'
+import { Icon } from 'react-native-eva-icons'
 import Clipboard from '@react-native-clipboard/clipboard'
 import Toast from 'react-native-root-toast'
 import { ParamListBase, useNavigation } from "@react-navigation/core"
@@ -22,6 +22,10 @@ import { RootState } from "../../store"
 import { hideAddress } from "../../utils"
 import { getBalance } from "../../store/actions/walletAction"
 import HeaderBar from "../../components/HeaderBar"
+// @ts-ignore
+import ScanIcon from '../../assets/icons/scan.svg'
+// @ts-ignore
+import AddIcon from '../../assets/icons/add.svg'
 
 function Home() {
     const frame = useSafeAreaFrame()
@@ -66,7 +70,7 @@ function Home() {
                                 navigation.push('addToken')
                             }}
                             style={tw`w-full h-full flex items-center justify-center`}>
-                            {/* <Icon name="add" size={30} color={'#ffffff'} /> */}
+                            <AddIcon width={20} height={20} />
                         </Pressable>
                     }
                     title={
@@ -83,12 +87,13 @@ function Home() {
                                 <Text style={tw`text-white text-center`}>
                                     {selectedWallet.alias ?? (selectedWallet.name + ' ' + (selectedWallet.index + 1))}
                                 </Text>
-                                {/* <Icon 
+                                <Icon 
                                     style={tw`ml-1`}
-                                    name="caret-down-outline" 
-                                    size={16} 
-                                    color={'#ffffff'} 
-                                /> */}
+                                    name="arrow-down" 
+                                    width={16} 
+                                    height={16} 
+                                    fill={'#ffffff'} 
+                                />
                             </View>
                         </Pressable>
                     }
@@ -98,7 +103,7 @@ function Home() {
                                 navigation.push('scan')
                             }}
                             style={tw`w-full h-full flex items-center justify-center`}>
-                            {/* <Icon name="scan" size={20} color={'#ffffff'} /> */}
+                            <ScanIcon width={20} height={20} />
                         </Pressable>
                     }
                 />
@@ -114,11 +119,12 @@ function Home() {
                         style={tw`text-white text-xs`}>
                         {selectedNetwork.name}
                     </Text>
-                    {/* <Icon 
+                    <Icon 
                         name="chevron-down" 
-                        size={16} 
-                        color={'#ffffff'} 
-                    /> */}
+                        width={16} 
+                        height={16} 
+                        fill={'#ffffff'} 
+                    />
                 </Pressable>
                 <View style={tw`bg-purple-600 absolute z-0 top-0 left-0 right-0 h-1/2`}></View>
                 <View 

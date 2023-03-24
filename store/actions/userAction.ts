@@ -1,12 +1,12 @@
 import { Dispatch, AnyAction } from "redux"
 import { MAINNET } from "../../config"
-import { DEL_PASSWORD, CLEAR_WALLET, RESET_NETWORK_TYPE } from "../constants"
+import { delPassword } from "../reducers/userSlice"
+import { CLEAR_WALLET } from "../reducers/walletSlice"
 
 
 export const logout = () => {
     return (dispatch: Dispatch<AnyAction>) => {
-        dispatch({ type: CLEAR_WALLET })
-        dispatch({ type: DEL_PASSWORD })
-        dispatch({ type: RESET_NETWORK_TYPE })
+        dispatch(CLEAR_WALLET())
+        dispatch(delPassword())
     }
 }

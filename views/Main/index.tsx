@@ -1,6 +1,6 @@
 import React from "react"
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-// import Icon from 'react-native-vector-icons/Ionicons'
+import { Icon } from 'react-native-eva-icons'
 import Home from "./Home"
 import Browser from "./Browser"
 import Mine from "./Mine"
@@ -18,9 +18,9 @@ function Main() {
                     tabBarShowLabel: false,
                     headerShown: false,
                     tabBarActiveTintColor: tw.color('purple-600'),
-                    // tabBarIcon: ({ color }) => (
-                    //     <Icon name="wallet" size={20} color={color} />
-                    // )
+                    tabBarIcon: ({ color }) => (
+                        <Icon name="npm-outline" width={24} height={24} fill={color} />
+                    )
                 }}
             />
             <BottomTab.Screen 
@@ -30,9 +30,9 @@ function Main() {
                     headerTitle: '浏览器',
                     tabBarShowLabel: false,
                     tabBarActiveTintColor: tw.color('purple-600'),
-                    // tabBarIcon: ({ color }) => (
-                    //     <Icon name="logo-chrome" size={20} color={color} />
-                    // )
+                    tabBarIcon: ({ color }) => (
+                        <Icon name="globe-outline" width={24} height={24} fill={color} />
+                    )
                 }}
             />
             <BottomTab.Screen 
@@ -42,9 +42,9 @@ function Main() {
                     headerTitle: '我的',
                     tabBarShowLabel: false,
                     tabBarActiveTintColor: tw.color('purple-600'),
-                    // tabBarIcon: ({ color }) => (
-                    //     <Icon name="person" size={20} color={color} />
-                    // )
+                    tabBarIcon: ({ color }) => (
+                        <Icon name="settings-outline" width={24} height={24} fill={color} />
+                    )
                 }}
             />
         </BottomTab.Navigator>

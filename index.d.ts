@@ -29,13 +29,12 @@ interface Network {
     id: number,
     name: string,
     shortName: string,
-    type: string,
-    hdIndex: number,
-    isTest: false,
-    apiUrl: string,
+    networkType: string,
+    chainType: number,
+    api: string,
     scanUrl: string,
-    createTime: string,
-    updateTime: string
+    createdAt: string,
+    updatedAt: string
 }
 
 interface ContractToken {

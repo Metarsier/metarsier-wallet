@@ -1,13 +1,12 @@
 import { ec } from 'elliptic'
 import BN from 'bn.js'
 import bs58 from 'bs58'
-import CryptoJS, { SHA256 } from 'crypto-js'
+import CryptoJS from 'crypto-js'
 import { Buffer } from 'buffer'
 import { generateMnemonic, mnemonicToSeedSync } from '../utils/bip39'
-import { keccak256, sha256, ripemd160 } from "ethers/lib/utils"
-// import { isValidChecksumAddress, unpadBuffer } from '@ethereumjs/util'
-import { nanoid } from 'nanoid'
-import { hexStrToBuf } from "."
+import { keccak256, sha256, ripemd160, isValidMnemonic, randomBytes } from "ethers/lib/utils"
+import { hexStrToBuf, uuid } from "."
+import { CHAIN_COINTYPE } from '../config'
 
 const secp256k1 = new ec('secp256k1')
 const n = secp256k1.curve.n
@@ -163,7 +162,7 @@ interface CreateHDWalletProps {
  * @returns 
  */
  export function createHDWallet({ mnemonic, index = 0 }: CreateHDWalletProps): HDWallet {
-    // if (mnemonic && !isValidMnemonic(mnemonic)) throw new Error("助记词无效")
+    if (mnemonic && !isValidMnemonic(mnemonic)) throw new Error("助记词无效")
     if (!mnemonic) {
         mnemonic = generateMnemonic()
     }
@@ -178,8 +177,9 @@ interface CreateHDWalletProps {
     const IR = I.slice(32)
     if (!isPrivate(IL)) throw new TypeError(THROW_BAD_PRIVATE)
     const { publicKey, compressPublicKey } = getPubkeyFromPrikey(IL)
+
     return {
-        id: nanoid(),
+        id: uuid(),
         privateKey: '0x' + IL.toString('hex'),
         publicKey: '0x' + publicKey.toString('hex'),
         compressPublicKey: '0x' + compressPublicKey.toString('hex'),
@@ -233,12 +233,11 @@ function derive(this: HDWallet, index: number, chain: string): HDWallet {
         if (!Ki) return derive.call(this, index + 1, chain)
     }
 
-    // const coinType: number = CHAIN_COINTYPE[chain]
-    const coinType: number = 60
+    const coinType: number = CHAIN_COINTYPE[chain]
     const { publicKey, compressPublicKey } = getPubkeyFromPrikey(ki)
     const address = getAddress(ki, coinType)
     return {
-        id: nanoid(),
+        id: uuid(),
         privateKey: '0x' + ki.toString('hex'),
         publicKey: '0x' + publicKey.toString('hex'),
         compressPublicKey: '0x' + compressPublicKey.toString('hex'),
@@ -262,8 +261,7 @@ function derive(this: HDWallet, index: number, chain: string): HDWallet {
  * @returns 
  */
  export function deriveWallet(parent: HDWallet, chain: string = 'Ethereum', index: number = 0): HDWallet {
-    // const coinType: number = CHAIN_COINTYPE[chain]
-    const coinType: number = 60
+    const coinType: number = CHAIN_COINTYPE[chain]
     const derivePath = getPath(coinType, index)
     let splitPath = derivePath.split('/')
     if (splitPath[0] === 'm') {
@@ -296,13 +294,12 @@ function derive(this: HDWallet, index: number, chain: string): HDWallet {
  * @returns 
  */
 export function createWalletByPrivateKey(privateKey: string, chain: string, index: number = 0): HDWallet {
-    // const coinType = CHAIN_COINTYPE[chain]
-    const coinType = 60
+    const coinType = CHAIN_COINTYPE[chain]
     const privKey: Buffer = hexStrToBuf(privateKey)
     const { publicKey, compressPublicKey } = getPubkeyFromPrikey(privKey)
     const address = getAddress(privKey, coinType)
     return {
-        id: nanoid(),
+        id: uuid(),
         privateKey: privateKey.startsWith('0x') ? privateKey : '0x' + privateKey,
         publicKey: '0x' + publicKey.toString('hex'),
         compressPublicKey: '0x' + compressPublicKey.toString('hex'),
