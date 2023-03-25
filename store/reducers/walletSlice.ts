@@ -1,4 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import Metabit from "../../api/Metabit"
+import { createWalletByMnemonic } from "../../utils"
+import { createWalletByPrivateKey, deriveWallet } from "../../utils/wallet"
 
 export interface WalletState {
     wallets: HDWallet[],
@@ -16,100 +19,179 @@ const initialState: WalletState = {
     tokens: []
 }
 
+export const getTokens = createAsyncThunk(
+    'wallet/getTokens',
+    async () => {
+      const res = await Metabit.getContractTokens()
+      return res.data.data as ContractToken[]
+    }
+)
+
+export const getNetworks = createAsyncThunk(
+    'wallet/getNetworks',
+    async () => {
+      const res = await Metabit.getNetworks()
+      return res.data.data as Network[]
+    }
+)
+
 const walletSlice = createSlice({
     name: "wallet",
     initialState,
     reducers: {
-        CREATE_WALLET: (state, action: PayloadAction<HDWallet[]>) => {
-            state.wallets = [ ...state.wallets, ...action.payload ]
+        createWallet: (state, action: PayloadAction<CreateWalletPayload>) => {
+            const networks: Network[] = state.networks
+            const wallets: HDWallet[] = createWalletByMnemonic(state.wallets, action.payload.mnemonic)
+            if (action.payload.selected) {
+                const wallet = wallets[1]  // 默认选择 Ethereum 钱包
+                state.selectedWallet = wallet
+                for (let i = 0; i < networks.length; i++) {
+                    const network = networks[i]
+                    if (wallet.chain?.toLowerCase() === network.shortName.toLowerCase()) {
+                        state.selectedNetwork = network
+                    }
+                }
+            }
+            state.wallets = [ ...state.wallets, ...wallets ]
         },
-        ADD_CHILD_WALLET: (state, action: PayloadAction<HDWallet[]>) => {
-            state.wallets = [ ...state.wallets, ...action.payload ]
+        importWalletByPrivateKey: (state, action: PayloadAction<ImportWalletByPrivateKeyPayload>) => {
+            const networks: Network[] = state.networks
+            const wallets: HDWallet[] = state.wallets.filter((item: HDWallet) => item.type !== -1 && !item.parentId && item.chain === action.payload.chain)
+            let index = 0
+            if (wallets && wallets.length) {
+                const maxIndex = Math.max(...wallets.map((item: HDWallet) => item.index))
+                index = maxIndex + 1
+            }
+            const wallet: HDWallet = createWalletByPrivateKey(action.payload.privateKey, action.payload.chain, index)
+            state.wallets = [ ...state.wallets, wallet ]
+            if (action.payload.selected) {
+                state.selectedWallet  = wallet
+                for (let i = 0; i < networks.length; i++) {
+                    const network = networks[i]
+                    if (wallet.chain?.toLowerCase() === network.shortName.toLowerCase()) {
+                        state.selectedNetwork = network
+                    }
+                }
+            }
         },
-        CHANGE_WALLET: (state, action: PayloadAction<HDWallet>) => {
-            state.selectedWallet  = action.payload
+        addChildWallet: (state, action: PayloadAction<AddChildWalletPayload>) => {
+            const children: HDWallet[] = state.wallets.filter((item: HDWallet) => item.parentId === action.payload.wallet.id)
+            let index = 0
+            if (children && children.length) {
+                const indexes = children.filter((item: HDWallet) => item.chain === action.payload.chain).map((item: HDWallet) => item.index)
+                if (indexes && indexes.length) {
+                    const maxIndex = Math.max(...indexes)
+                    index = maxIndex + 1
+                }
+            }
+            const child = deriveWallet(action.payload.wallet, action.payload.chain, index)
+            state.wallets = [ ...state.wallets, child ]
         },
-        SET_WALLET: (state, action: PayloadAction<HDWallet>) => {
+        changeWallet: (state, action: PayloadAction<HDWallet>) => {
+            const networks: Network[] = state.networks
             const wallet: HDWallet = action.payload
+            state.selectedWallet  = wallet
+            for (let i = 0; i < networks.length; i++) {
+                const network = networks[i]
+                if (wallet.chain?.toLowerCase() === network.shortName.toLowerCase()) {
+                    state.selectedNetwork = network
+                }
+            }
+        },
+        setWalletAlias: (state, action: PayloadAction<SetWalletAliasPayload>) => {
+            const id: string = action.payload.id
+            const alias: string = action.payload.alias
             for (let i = 0; i < state.wallets.length; i++) {
-                if (wallet.publicKey === state.wallets[i].publicKey) {
-                    state.wallets[i].alias = wallet.alias
+                if (id === state.wallets[i].id) {
+                    state.wallets[i].alias = alias
                 }
             }
             state.wallets = [ ...state.wallets ]
         },
-        DEL_WALLET: (state, action: PayloadAction<HDWallet>) => {
-            // state.wallets = { ...action.payload }
+        delWallet: (state, action: PayloadAction<DelWalletPayload>) => {
+            const id = action.payload.id
+            const list: HDWallet[] = state.wallets.filter((item: HDWallet) => {
+                if (action.payload.isRoot) {
+                    return item.id !== id && item.parentId !== id
+                }
+                return item.id !== id
+            })
+            state.wallets = [ ...list ]
+            action.payload.callback(list.length === 0)
         },
-        CLEAR_WALLET: (state) => {
-            state = { ...initialState }
+        clearWallet: (state) => {
+            state.wallets = []
+            state.networks = []
+            state.tokens = []
+            state.selectedWallet = {} as HDWallet
+            state.selectedNetwork = {} as Network
         },
-        SET_TOKEN: (state, action: PayloadAction<ContractToken[]>) => {
-            state.tokens = [ ...action.payload ]
+        selectToken: (state, action: PayloadAction<ContractToken>) => {
+            const tokens: ContractToken[] = state.tokens
+            const token: ContractToken = action.payload
+            for (let i = 0; i < tokens.length; i++) {
+                if ((token.symbol + token.network) === (tokens[i].symbol + tokens[i].network)) {
+                    tokens[i].isSelect = true
+                }
+            }
+            state.tokens = [ ...tokens ]
         },
-        SET_NETWORK: (state, action: PayloadAction<Network[]>) => {
-            state.networks = [ ...action.payload ]
+        addToken: (state, action: PayloadAction<ContractToken>) => {
+            const tokens: ContractToken[] = state.tokens
+            const token: ContractToken = action.payload
+            const symbolNetworks: string[] = tokens.map(item => item.symbol + item.network)
+            if (!symbolNetworks.includes(token.symbol + token.network)) {
+                state.tokens = [ ...tokens, token ]
+            }
         },
-        SET_SELECTED_NETWORK: (state, action: PayloadAction<Network>) => {
+        delToken: (state, action: PayloadAction<ContractToken>) => {
+            const tokens: ContractToken[] = state.tokens
+            const token: ContractToken = action.payload
+            const list = tokens.filter(item => (item.symbol + item.network) != (token.symbol + token.network))
+            state.tokens = [ ...list ]
+        },
+        selectNetworkType: (state, action: PayloadAction<Network>) => {
             state.selectedNetwork = { ...action.payload }
-        },
-        RESET_NETWORK_TYPE: (state) => {
-            state = { ...initialState }
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(getTokens.fulfilled, (state, action: PayloadAction<ContractToken[]>) => {
+            const seletedTokenAddress = state.tokens.filter((item: ContractToken) => item.isSelect).map((item: ContractToken) => item.address)
+            const tokens: ContractToken[] = action.payload
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokens[i].address === '0x0' || seletedTokenAddress.includes(tokens[i].address)) {
+                    tokens[i].isSelect = true
+                }
+            }
+            state.tokens = tokens
+        })
+        builder.addCase(getNetworks.fulfilled, (state, action: PayloadAction<Network[]>) => {
+            const networks: Network[] = action.payload
+            state.networks = networks
+            const selectedNetwork: Network = state.selectedNetwork
+            if (!selectedNetwork || !selectedNetwork.shortName) {
+                state.selectedNetwork = networks[0]
+            } else {
+                const networkNames = networks.map((network: Network) => network.shortName)
+                if (!networkNames.includes(selectedNetwork.shortName)) {
+                    state.selectedNetwork = networks[0]
+                }
+            }
+        })
     },
 })
 
 export const { 
-    CREATE_WALLET, 
-    ADD_CHILD_WALLET, 
-    CHANGE_WALLET,
-    SET_WALLET,
-    DEL_WALLET,
-    CLEAR_WALLET,
-    SET_TOKEN,
-    SET_NETWORK,
-    SET_SELECTED_NETWORK,
-    RESET_NETWORK_TYPE
+    createWallet,
+    importWalletByPrivateKey,
+    addChildWallet, 
+    changeWallet,
+    setWalletAlias,
+    delWallet,
+    clearWallet,
+    selectToken,
+    addToken,
+    delToken,
+    selectNetworkType
 } = walletSlice.actions
 export default walletSlice.reducer
-
-// const reducer = (state: WalletState = initState, action: AnyAction) => {
-//     switch (action.type) {
-//         case CREATE_WALLET:
-//             return { 
-//                 ...state, 
-//                 wallets: [ ...state.wallets, ...action.payload ]
-//             }
-//         case ADD_CHILD_WALLET:
-//             return { ...state, wallets: [ ...state.wallets, ...action.payload ] }
-//         case CHANGE_WALLET:
-//             /**
-//              * 每次切换只能展示一种币种的钱包，因为需要切换主网与各种测试网络
-//              */
-//             return { ...state, selectedWallet: action.payload }
-//         case SET_WALLET:
-//             const wallet: HDWallet = action.payload
-//             for (let i = 0; i < state.wallets.length; i++) {
-//                 if (wallet.publicKey === state.wallets[i].publicKey) {
-//                     state.wallets[i].alias = wallet.alias
-//                 }
-//             }
-//             return { ...state, wallets: [...state.wallets] }
-//         case DEL_WALLET:
-//             return { ...state, wallets: { ...action.payload } }
-//         case CLEAR_WALLET:
-//             return { ...initState }
-//         case SET_TOKEN:
-//             return { ...state, tokens: [...action.payload] }
-//         case SET_NETWORK:
-//             return { ...state, networks: [...action.payload] }
-//         case SET_SELECTED_NETWORK:
-//             return { ...state, selectedNetwork: action.payload }
-//         case RESET_NETWORK_TYPE:
-//             return { ...initState }
-//         default:
-//             return state
-//     }
-// }
-
-// export default reducer

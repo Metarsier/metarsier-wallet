@@ -6,9 +6,9 @@ import { Icon } from 'react-native-eva-icons'
 import Clipboard from '@react-native-clipboard/clipboard'
 import tw from "twrnc"
 import { useDispatch, useSelector } from 'react-redux'
-import { createWallet, importWalletByPrivateKey } from "../../store/actions/walletAction"
 import { CHAINS } from "../../config"
 import { RootState } from "../../store"
+import { createWallet, importWalletByPrivateKey } from "../../store/reducers/walletSlice"
 
 function ImportWallet() {
     const route = useRoute()
@@ -94,13 +94,13 @@ function ImportWallet() {
                     disabled={!text.trim()}
                     onTouchStart={() => {
                         try {
-                            const isSelect = !(action && action === 'back')
+                            const selected = !(action && action === 'back')
                             if (type === 'mnemonic') {
                                 const mnemonic = text.trim()
-                                dispatch(createWallet(mnemonic, isSelect) as any)
+                                dispatch(createWallet({ mnemonic, selected }))
                             } else if (type === 'privateKey') {
                                 const privateKey = text.trim()
-                                dispatch(importWalletByPrivateKey(privateKey, chain, isSelect) as any)
+                                dispatch(importWalletByPrivateKey({ privateKey, chain, selected }))
                             }
                             if (action && action === 'back') {
                                 navigation.goBack()

@@ -3,7 +3,7 @@ import type { PropsWithChildren } from 'react'
 import '@ethersproject/shims'
 import Navigator from './views/Navigator'
 import { useDispatch } from 'react-redux';
-import { getNetworks } from './store/actions/walletAction';
+import { getNetworks, getTokens } from './store/reducers/walletSlice';
 
 // type SectionProps = PropsWithChildren<{
 // 	title: string;
@@ -14,6 +14,7 @@ function App() {
 
 	useEffect(() => {
 		dispatch(getNetworks() as any)
+		dispatch(getTokens() as any)
 	}, [])
 
 	return (

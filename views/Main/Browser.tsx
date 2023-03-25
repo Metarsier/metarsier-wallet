@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { ActivityIndicator, View } from "react-native"
 import { WebView } from 'react-native-webview'
 import tw from "twrnc"
 
 function Brower() {
-    const [ timestamp, setTimestamp ] = useState<number>()
     const [ loading, setLoading ] = useState<boolean>(true)
-
-    useEffect(() => {
-        setTimestamp(new Date().getTime())
-    }, [])
+    
     return (
         <View style={tw`relative w-full h-full`}>
             {
@@ -22,7 +18,7 @@ function Brower() {
                 onLoadEnd={() => {
                     setLoading(false)
                 }} 
-                source={{ uri: `https://jyavs.com/?t=${timestamp}` }} 
+                source={{ uri: `https://www.bing.com/` }} 
             />
         </View>
     )

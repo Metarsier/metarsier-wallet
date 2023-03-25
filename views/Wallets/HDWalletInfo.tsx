@@ -13,7 +13,7 @@ import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-cont
 import { RootState } from "../../store"
 import HeaderBar from "../../components/HeaderBar"
 import WalletItem from "./WalletItem"
-import { DEL_WALLET, SET_WALLET } from "../../store/constants"
+import { delWallet, setWalletAlias } from "../../store/reducers/walletSlice"
 
 function HDWalletInfo() {
     const frame = useSafeAreaFrame()
@@ -54,15 +54,17 @@ function HDWalletInfo() {
                                     {
                                         text: "确定",
                                         onPress: () => {
-                                            const list: HDWallet[] = wallets.filter((item: HDWallet) => item.id !== hdWallet.id && item.parentId !== hdWallet.id)
-                                            setTimeout(() => {
-                                                dispatch({ type: DEL_WALLET, payload: list })
-                                            }, 50)
-                                            if (list.length === 0) {
-                                                navigation.replace('entry')
-                                            } else {
-                                                navigation.goBack()
-                                            }
+                                            dispatch(delWallet({ 
+                                                id: hdWallet.id, 
+                                                isRoot: true, 
+                                                callback: (isClearAll: boolean) => {
+                                                    if (isClearAll) {
+                                                        navigation.replace('entry')
+                                                    } else {
+                                                        navigation.goBack()
+                                                    }
+                                                } 
+                                            }))
                                         }
                                     }
                                 ])
@@ -225,11 +227,7 @@ function HDWalletInfo() {
                         </Pressable>
                         <Pressable 
                             onPress={() => {
-                                hdWallet.alias = alias
-                                dispatch({
-                                    type: SET_WALLET,
-                                    payload: hdWallet
-                                })
+                                dispatch(setWalletAlias({ id: hdWallet.id, alias }))
                                 setShowEditAliasModal(false)
                             }}
                             style={tw`flex-1 py-2 border border-purple-600 bg-purple-600 rounded-full`}>

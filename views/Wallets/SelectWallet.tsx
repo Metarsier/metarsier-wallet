@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { Image, Platform, Pressable, ScrollView, StatusBar, Text, useColorScheme, View } from "react-native"
 import tw from "twrnc"
-// import Icon from 'react-native-vector-icons/Ionicons'
+import { Icon } from 'react-native-eva-icons'
 import { useNavigation, ParamListBase } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../store"
 import { CHAIN_MAP } from "../../config"
-import { changeWallet } from "../../store/actions/walletAction"
+import { changeWallet } from "../../store/reducers/walletSlice"
 
 function SelectWallet() {
     const isDarkMode = useColorScheme() === 'dark'
@@ -42,7 +42,12 @@ function SelectWallet() {
                 <Pressable 
                     onPress={() => navigation.goBack()}
                     style={tw`w-14 flex justify-center items-center`}>
-                    {/* <Icon name="close" size={26} color={getColor('purple-600')} /> */}
+                    <Icon 
+                        name="close" 
+                        width={26} 
+                        height={26} 
+                        fill={tw.color('purple-600')} 
+                    />
                 </Pressable>
             </View>
             <View style={tw`absolute top-14 left-0 right-0 bottom-0`}>
@@ -83,15 +88,16 @@ function SelectWallet() {
                                         </View>
                                         <Pressable 
                                             onPress={() => {
-                                                // dispatch(changeWallet(item))
+                                                dispatch(changeWallet(item))
                                                 navigation.goBack()
                                             }}
                                             style={tw`w-8 h-8 flex justify-center items-center`}>
-                                            {/* <Icon 
-                                                name="checkmark-circle" 
-                                                size={20}
-                                                color={getColor(`${selectedWallet.id === item.id ? 'green-600' : 'gray-200'}`)}
-                                            /> */}
+                                            <Icon 
+                                                name="checkmark-circle-2" 
+                                                width={20}
+                                                height={20}
+                                                fill={tw.color(`${selectedWallet.id === item.id ? 'green-600' : 'gray-200'}`)}
+                                            />
                                         </Pressable>
                                     </View>
                                 }
@@ -122,15 +128,16 @@ function SelectWallet() {
                                                     </View>
                                                     <Pressable 
                                                         onPress={() => {
-                                                            // dispatch(changeWallet(it))
+                                                            dispatch(changeWallet(it))
                                                             navigation.goBack()
                                                         }}
                                                         style={tw`w-8 h-8 flex justify-center items-center`}>
-                                                        {/* <Icon 
-                                                            name="checkmark-circle" 
-                                                            size={20}
-                                                            color={getColor(`${selectedWallet.id === it.id ? 'green-600' : 'gray-200'}`)}
-                                                        /> */}
+                                                        <Icon 
+                                                            name="checkmark-circle-2" 
+                                                            width={20}
+                                                            height={20}
+                                                            fill={tw.color(`${selectedWallet.id === it.id ? 'green-600' : 'gray-200'}`)}
+                                                        />
                                                     </Pressable>
                                                 </View>
                                             ))

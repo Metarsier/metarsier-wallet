@@ -1,7 +1,6 @@
 import Decimal from 'decimal.js-light'
 import { Buffer } from "buffer"
 import { createHDWallet, deriveWallet } from './wallet'
-import { store } from '../store'
 import { randomBytes } from 'ethers/lib/utils'
 
 export const hideAddress = (address: string) => {
@@ -25,9 +24,8 @@ export const hexStrToBuf = (str: string): Buffer => {
     return buf
 }
 
-export function createWalletByMnemonic(mnemonic?: string): HDWallet[] {
+export function createWalletByMnemonic(wallets: HDWallet[], mnemonic?: string): HDWallet[] {
     let index = 0
-    const wallets: HDWallet[] = store.getState().wallet.wallets
     const roots = wallets.filter((item: HDWallet) => item.type === -1)
     if (roots.length) {
         const maxIndex = Math.max(...roots.map((item: HDWallet) => item.index))

@@ -5,7 +5,8 @@ import { Alert, Pressable, Text, View } from "react-native"
 import { Icon } from 'react-native-eva-icons'
 import { useDispatch } from 'react-redux'
 import tw from "twrnc"
-import { logout } from "../../store/actions/userAction"
+import { delPassword } from "../../store/reducers/userSlice"
+import { clearWallet } from "../../store/reducers/walletSlice"
 
 function Mine() {
     const dispatch = useDispatch()
@@ -49,7 +50,8 @@ function Mine() {
                             {
                                 text: "确定",
                                 onPress: () => {
-                                    dispatch(logout() as any)
+                                    dispatch(clearWallet())
+                                    dispatch(delPassword())
                                     navigation.navigate('entry')
                                 }
                             }

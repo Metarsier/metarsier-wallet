@@ -6,8 +6,8 @@ import tw from "twrnc"
 // import Icon from "react-native-vector-icons/Ionicons"
 import { CHAINS } from "../../config"
 import { useDispatch } from "react-redux"
-import { addChildWallet } from "../../store/actions/walletAction"
 import { useRoute } from "@react-navigation/native"
+import { addChildWallet } from "../../store/reducers/walletSlice"
 
 function DeriveWallet() {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
@@ -54,7 +54,7 @@ function DeriveWallet() {
                 <Pressable 
                     onPress={() => {
                         try {
-                            // dispatch(addChildWallet(parent, chain))
+                            dispatch(addChildWallet({ wallet: parent, chain }))
                             navigation.goBack()
                         } catch (error: any) {
                             Alert.alert(JSON.stringify(error))

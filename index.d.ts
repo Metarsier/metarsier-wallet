@@ -41,7 +41,7 @@ interface ContractToken {
     id: number,
     name: string,
     symbol: string,
-    icon: string,
+    logo: string,
     decimals: number,
     address: string,
     balance: number,
@@ -51,6 +51,34 @@ interface ContractToken {
     createTime: Date,
     updateTime: Date
 }
+
+interface CreateWalletPayload {
+    mnemonic?: string,
+    selected?: boolean
+}
+
+interface ImportWalletByPrivateKeyPayload {
+    privateKey: string,
+    chain: string,
+    selected?: boolean
+}
+
+interface AddChildWalletPayload {
+    wallet: HDWallet,
+    chain: string
+}
+
+interface SetWalletAliasPayload {
+    id: string,
+    alias: string
+}
+
+interface DelWalletPayload {
+    id: string,
+    isRoot: boolean,
+    callback: (isClearAll: boolean) => void
+}
+
 
 declare module "tronweb" {
     interface trx {
