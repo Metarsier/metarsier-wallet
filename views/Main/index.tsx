@@ -20,7 +20,8 @@ function Main() {
                     tabBarActiveTintColor: tw.color('purple-600'),
                     tabBarIcon: ({ color }) => (
                         <Icon name="npm-outline" width={24} height={24} fill={color} />
-                    )
+                    ),
+                    unmountOnBlur: true
                 }}
             />
             <BottomTab.Screen 
@@ -32,7 +33,8 @@ function Main() {
                     tabBarActiveTintColor: tw.color('purple-600'),
                     tabBarIcon: ({ color }) => (
                         <Icon name="globe-outline" width={24} height={24} fill={color} />
-                    )
+                    ),
+                    unmountOnBlur: true
                 }}
             />
             <BottomTab.Screen 
@@ -44,7 +46,8 @@ function Main() {
                     tabBarActiveTintColor: tw.color('purple-600'),
                     tabBarIcon: ({ color }) => (
                         <Icon name="settings-outline" width={24} height={24} fill={color} />
-                    )
+                    ),
+                    unmountOnBlur: true
                 }}
             />
         </BottomTab.Navigator>

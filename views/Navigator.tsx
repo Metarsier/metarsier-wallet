@@ -11,6 +11,7 @@ import Entry from "./Entry";
 import ImportWallet from "./ImportWallet";
 import Main from "./Main";
 import Networks from "./Networks";
+import Receive from "./Receive";
 import Scan from "./Scan";
 import Wallets from "./Wallets";
 import HDWalletInfo from "./Wallets/HDWalletInfo";
@@ -32,9 +33,25 @@ function Navigator() {
             <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
             <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
 				<Stack.Navigator initialRouteName={wallets && wallets.length ? 'main' : 'entry'}>
-					<Stack.Screen name="entry" component={Entry} options={{ headerShown: false }} />
-					<Stack.Screen name="main" component={Main} options={{ headerShown: false }} />
-					<Stack.Screen name="scan" component={Scan} />
+					<Stack.Screen 
+						name="entry" 
+						component={Entry} 
+						options={{ headerShown: false }} 
+					/>
+					<Stack.Screen 
+						name="main" 
+						component={Main} 
+						options={{ headerShown: false }} 
+					/>
+					<Stack.Screen 
+						name="scan" 
+						component={Scan} 
+					/>
+					<Stack.Screen 
+						name="receive" 
+						component={Receive} 
+						options={{ headerTitle: '收款' }} 
+					/>
 					<Stack.Screen 
 						name="wallets" 
 						component={Wallets}

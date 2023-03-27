@@ -6,7 +6,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { Icon } from 'react-native-eva-icons'
 import tw from "twrnc"
 import { RootState } from "../../store"
-import { setNetworkType } from "../../store/actions/walletAction"
+import { selectNetworkType } from "../../store/reducers/walletSlice"
 
 function Networks() {
     const isDarkMode = useColorScheme() === 'dark'
@@ -45,7 +45,7 @@ function Networks() {
                         <Pressable 
                             key={item.name} 
                             onPress={() => {
-                                dispatch(setNetworkType(item) as any)
+                                dispatch(selectNetworkType(item))
                                 navigation.goBack()
                             }}
                             style={tw`flex flex-row bg-white p-4 rounded-md ${i === 0 ? '' : 'mt-3'}`}>

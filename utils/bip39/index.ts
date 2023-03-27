@@ -79,11 +79,11 @@ export function mnemonicToSeedSync(mnemonic: string, password?: string) {
     return pbkdf2.pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
 
-export function generateMnemonic(strength?: number, rng?: (n: number) => Buffer, word?: string) {
-    strength = strength || 128
-    if (strength % 32 !== 0) {
-        throw new TypeError(INVALID_ENTROPY)
-    }
-    rng = rng || randomBytes
-    return entropyToMnemonic(rng(strength / 8), word)
-}
+// export function generateMnemonic(strength?: number, rng?: (n: number) => Buffer, word?: string) {
+//     strength = strength || 128
+//     if (strength % 32 !== 0) {
+//         throw new TypeError(INVALID_ENTROPY)
+//     }
+//     rng = rng || randomBytes
+//     return entropyToMnemonic(rng(strength / 8), word)
+// }

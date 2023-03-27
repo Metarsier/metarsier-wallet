@@ -48,6 +48,7 @@ interface ContractToken {
     chainType: string,
     network: string,
     isSelect: boolean,
+    sort: number,
     createTime: Date,
     updateTime: Date
 }
@@ -77,6 +78,11 @@ interface DelWalletPayload {
     id: string,
     isRoot: boolean,
     callback: (isClearAll: boolean) => void
+}
+
+interface HandlerGetBalance {
+    index: number,
+    func: any
 }
 
 

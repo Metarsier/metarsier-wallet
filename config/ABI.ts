@@ -1,5 +1,5 @@
 const ABI: {[key: string]: any[]} = {
-    'ERC20': [
+    '60': [
         {
             "constant": true,
             "inputs": [],
@@ -221,7 +221,7 @@ const ABI: {[key: string]: any[]} = {
             "type": "event"
         }
     ],
-    'TRC20': [
+    '195': [
         {
             "constant": true,
             "inputs": [],

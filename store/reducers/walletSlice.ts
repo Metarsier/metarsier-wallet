@@ -1,5 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import Decimal from "decimal.js-light"
+import { Contract, ethers, Wallet } from "ethers"
+import TronWeb from "tronweb"
+import lodash from 'lodash'
+import { RootState } from ".."
 import Metabit from "../../api/Metabit"
+import ABI from "../../config/ABI"
 import { createWalletByMnemonic } from "../../utils"
 import { createWalletByPrivateKey, deriveWallet } from "../../utils/wallet"
 
@@ -35,12 +41,91 @@ export const getNetworks = createAsyncThunk(
     }
 )
 
+
+
+export const getBalance = createAsyncThunk(
+    'wallet/getBalance',
+    async (cb: () => void = () => null, thunkAPI) => {
+        console.log('getBalance start: ')
+        const rootState = thunkAPI.getState() as RootState
+        const selectedNetwork: Network = rootState.wallet.selectedNetwork
+        const selectedWallet: HDWallet = rootState.wallet.selectedWallet
+        const tokens: ContractToken[] = lodash.sortBy(rootState.wallet.tokens, ['sort'])
+        console.log('api: ', selectedNetwork.api)
+        if (selectedWallet.chain === 'Ethereum' && selectedNetwork.chainType === 60) {
+            const provider = new ethers.providers.JsonRpcProvider(selectedNetwork.api)
+            const handlers: HandlerGetBalance[] = []
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokens[i].isSelect && tokens[i].network === selectedNetwork.shortName) {
+                    console.log(tokens[i].network)
+                    if (tokens[i].address === '0x0') {
+                        const wallet = new Wallet(selectedWallet.privateKey, provider)
+                        handlers.push({index: i, func: wallet.getBalance()})
+                    } else {
+                        const contract = new Contract(tokens[i].address, ABI[tokens[i].chainType], provider)
+                        handlers.push({index: i, func: contract.balanceOf(selectedWallet.address)})
+                    }
+                }
+            }
+            const funcs = handlers.map((item: HandlerGetBalance) => item.func)
+            const res = await Promise.all(funcs)
+            if (res && res.length && Array.isArray(res)) {
+                for (let i = 0; i < handlers.length; i++) {
+                    if (i === 0) {
+                        tokens[handlers[i].index].balance = +ethers.utils.formatEther(res[i])
+                    } else {
+                        const wei = ethers.utils.formatUnits(res[i], 'wei')
+                        tokens[handlers[i].index].balance = +new Decimal(wei).dividedBy(new Decimal('10').pow(tokens[i].decimals ?? 6)).toFixed(8)
+                    }
+                }
+            }
+            
+        } else if (selectedWallet.chain === 'Tron' && selectedNetwork.chainType === 195) {
+            const privateKey = selectedWallet.privateKey.replace(/^(0x)/, '')
+            const apiSplit = selectedNetwork.api.split('.io/')
+            const api = apiSplit[0] + '.io'
+            const apiKey = apiSplit[1]
+            const tronWeb = new TronWeb({ 
+                fullHost: api, 
+                solidityNode: api, 
+                headers: { "TRON-PRO-API-KEY": apiKey },
+                privateKey 
+            })
+            const handlers: HandlerGetBalance[] = []
+            for (let i = 0; i < tokens.length; i++) {
+                if (tokens[i].isSelect && tokens[i].network === selectedNetwork.shortName) {
+                    if (tokens[i].address === '0x0') {
+                        handlers.push({index: i, func: tronWeb.trx.getUnconfirmedBalance(selectedWallet.address)})
+                    } else {
+                        const contract = await tronWeb.contract(ABI[tokens[i].chainType], tokens[i].address)
+                        handlers.push({index: i, func: contract.balanceOf(selectedWallet.address).call()})
+                    }
+                }
+            }
+            const funcs = handlers.map((item: HandlerGetBalance) => item.func)
+            const res = await Promise.all(funcs)
+            if (res && res.length && Array.isArray(res)) {
+                for (let i = 0; i < handlers.length; i++) {
+                    if (i === 0) {
+                        tokens[handlers[i].index].balance = +tronWeb.fromSun(res[i])
+                    } else {
+                        tokens[handlers[i].index].balance = tronWeb.fromSun(res[i].toString())
+                    }
+                }
+            }
+        }
+        cb()
+        return tokens
+    }
+)
+
 const walletSlice = createSlice({
     name: "wallet",
     initialState,
     reducers: {
         createWallet: (state, action: PayloadAction<CreateWalletPayload>) => {
             const networks: Network[] = state.networks
+            console.log(action.payload.mnemonic)
             const wallets: HDWallet[] = createWalletByMnemonic(state.wallets, action.payload.mnemonic)
             if (action.payload.selected) {
                 const wallet = wallets[1]  // 默认选择 Ethereum 钱包
@@ -156,10 +241,11 @@ const walletSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(getTokens.fulfilled, (state, action: PayloadAction<ContractToken[]>) => {
-            const seletedTokenAddress = state.tokens.filter((item: ContractToken) => item.isSelect).map((item: ContractToken) => item.address)
-            const tokens: ContractToken[] = action.payload
+            const seletedTokenAddress = state.tokens.filter((item: ContractToken) => item.isSelect).map((item: ContractToken) => item.address + item.network)
+            const tokens: ContractToken[] = [ ...action.payload ]
+            console.log('tokens get:')
             for (let i = 0; i < tokens.length; i++) {
-                if (tokens[i].address === '0x0' || seletedTokenAddress.includes(tokens[i].address)) {
+                if (tokens[i].address === '0x0' || seletedTokenAddress.includes(tokens[i].address + tokens[i].network)) {
                     tokens[i].isSelect = true
                 }
             }
@@ -167,6 +253,7 @@ const walletSlice = createSlice({
         })
         builder.addCase(getNetworks.fulfilled, (state, action: PayloadAction<Network[]>) => {
             const networks: Network[] = action.payload
+            console.log('networks get:')
             state.networks = networks
             const selectedNetwork: Network = state.selectedNetwork
             if (!selectedNetwork || !selectedNetwork.shortName) {
@@ -177,6 +264,9 @@ const walletSlice = createSlice({
                     state.selectedNetwork = networks[0]
                 }
             }
+        })
+        builder.addCase(getBalance.fulfilled, (state, action: PayloadAction<ContractToken[]>) => {
+            state.tokens = [ ...action.payload ]
         })
     },
 })

@@ -2,12 +2,14 @@ import { ParamListBase, useNavigation } from "@react-navigation/core"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import React from "react"
 import { Pressable, Text, View } from "react-native"
+import { useDispatch } from "react-redux"
 import tw from "twrnc"
 import { displayName as appName } from '../../app.json'
+import { getNetworks, getTokens } from "../../store/reducers/walletSlice"
 
 function Entry() {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
-
+    const dispatch = useDispatch()
     return (
         <View style={tw`h-full bg-white flex justify-around`}>
             <View style={tw`flex items-center`}>
@@ -17,17 +19,29 @@ function Entry() {
             </View>
             <View style={tw`flex items-center`}>
                 <Pressable 
-                    onPress={() => navigation.push('importWallet', { type: 'mnemonic' })}
+                    onPress={() => {
+                        dispatch(getNetworks() as any)
+		                dispatch(getTokens() as any)
+                        navigation.push('importWallet', { type: 'mnemonic' })
+                    }}
                     style={tw`w-56 py-3 border border-purple-600 rounded-full mb-6`}>
                     <Text style={tw`text-purple-600 text-lg text-center`}>使用助记词导入</Text>
                 </Pressable>
                 <Pressable 
-                    onPress={() => navigation.push('importWallet', { type: 'privateKey' })}
+                    onPress={() => {
+                        dispatch(getNetworks() as any)
+		                dispatch(getTokens() as any)
+                        navigation.push('importWallet', { type: 'privateKey' })
+                    }}
                     style={tw`w-56 py-3 border border-purple-600 rounded-full mb-6`}>
                     <Text style={tw`text-purple-600 text-lg text-center`}>使用私钥导入</Text>
                 </Pressable>
                 <Pressable 
-                    onPress={() => navigation.push('addWallet')}
+                    onPress={() => {
+                        dispatch(getNetworks() as any)
+		                dispatch(getTokens() as any)
+                        navigation.push('addWallet')
+                    }}
                     style={tw`w-56 py-3 bg-purple-600 rounded-full mb-16`}>
                     <Text style={tw`text-white text-lg text-center`}>创建新钱包</Text>
                 </Pressable>

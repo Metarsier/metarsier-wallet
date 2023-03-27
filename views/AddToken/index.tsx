@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useMemo } from "react"
 import { FlatList, Image, Platform, Pressable, ScrollView, StatusBar, Text, TextInput, useColorScheme, View } from "react-native"
 import { useDispatch, useSelector } from 'react-redux'
 import { ParamListBase, useNavigation } from "@react-navigation/native"
@@ -12,9 +12,10 @@ function AddToken() {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
     const dispatch = useDispatch()
     const selectedNetwork: Network = useSelector((state: RootState) => state.wallet.selectedNetwork)
-    const tokens: ContractToken[] = useSelector((state: RootState) => {
-        return state.wallet.tokens.filter((item: ContractToken) => item.network.toLowerCase() === selectedNetwork.shortName?.toLowerCase())
-    })
+    const tokens: ContractToken[] = useSelector((state: RootState) => state.wallet.tokens)
+    const currentTokens: ContractToken[] = useMemo(() => {
+        return tokens.filter((item: ContractToken) => item.network === selectedNetwork.shortName && item.address !== '0x0')
+    }, [tokens, selectedNetwork])
 
     return (
         <View style={tw`absolute top-0 left-0 right-0 bottom-0`}>
@@ -58,10 +59,10 @@ function AddToken() {
                 }}>
                 <ScrollView>
                     {
-                        tokens.length ? 
+                        currentTokens.length ? 
                         <View style={tw`p-3`}>
                             {
-                                tokens.map((item: ContractToken) => (
+                                currentTokens.map((item: ContractToken) => (
                                     <View 
                                         key={item.address} 
                                         style={{

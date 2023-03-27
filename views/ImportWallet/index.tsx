@@ -102,11 +102,13 @@ function ImportWallet() {
                                 const privateKey = text.trim()
                                 dispatch(importWalletByPrivateKey({ privateKey, chain, selected }))
                             }
-                            if (action && action === 'back') {
-                                navigation.goBack()
-                            } else {
-                                navigation.replace('main')
-                            }
+                            setTimeout(() => {
+                                if (action && action === 'back') {
+                                    navigation.goBack()
+                                } else {
+                                    navigation.replace('main')
+                                }
+                            }, 300)
                         } catch (error: any) {
                             console.log(error)
                             setToastText(JSON.stringify(error))

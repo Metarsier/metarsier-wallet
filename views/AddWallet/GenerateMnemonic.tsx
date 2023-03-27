@@ -2,18 +2,21 @@ import { ParamListBase, useNavigation } from "@react-navigation/core"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import React, { useEffect, useState } from "react"
 import { ActivityIndicator, Pressable, Text, View } from "react-native"
+import { useSelector } from "react-redux"
 import tw from "twrnc"
+import { RootState } from "../../store"
 // import Icon from "react-native-vector-icons/Ionicons"
 import { createWalletByMnemonic } from "../../utils"
 
 function GenerateMnemonic() {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
+    const wallets = useSelector((state: RootState) => state.wallet.wallets)
     const [ mnemonic, setMnemonic ] = useState<string[]>([])
     const [ loading, setLoading ] = useState<boolean>(true)
 
     useEffect(() => {
         setTimeout(() => {
-            const list = createWalletByMnemonic()
+            const list = createWalletByMnemonic(wallets)
             const root = list[0]
             if (root && root.mnemonic && root.mnemonic.phrase) {
                 setMnemonic(root.mnemonic.phrase.split(' '))

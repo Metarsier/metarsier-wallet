@@ -10,7 +10,7 @@ export const hideAddress = (address: string) => {
 }
 
 export const fixBalance = (balance: string | number) => {
-    const str = new Decimal(balance).toFixed(6)
+    const str = new Decimal(balance ?? '0').toFixed(6)
 }
 
 /**

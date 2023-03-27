@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { 
     Alert,
     Image,
@@ -25,6 +25,7 @@ import HeaderBar from "../../components/HeaderBar"
 import ScanIcon from '../../assets/icons/scan.svg'
 // @ts-ignore
 import AddIcon from '../../assets/icons/add.svg'
+import { getBalance } from "../../store/reducers/walletSlice"
 
 function Home() {
     const frame = useSafeAreaFrame()
@@ -38,24 +39,26 @@ function Home() {
     const tokens: ContractToken[] = useSelector((state: RootState) => {
         return state.wallet.tokens.filter((item: ContractToken) => {
             return item.isSelect && item.network === selectedNetwork.shortName
-        })
+        }).sort((a, b) => a.sort - b.sort)
     })
-    const totalBalance: number = useSelector((state: RootState) => {
-        const tokenList = state.wallet.tokens.filter((item: ContractToken) => {
-            return item.isSelect && item.network === selectedNetwork.shortName
-        })
+
+    const totalBalance = useMemo(() => {
         let sum = 0
-        for (let i = 0; i < tokenList.length; i++) {
-            const item = tokenList[i]
-            sum = new Decimal(item.balance ?? '0').times(rate[item.symbol] ?? 1).plus(sum).toNumber()
+        for (let i = 0; i < tokens.length; i++) {
+            if (!!tokens[i].balance) {
+                sum = new Decimal(tokens[i].balance).times(rate[tokens[i].symbol] ?? 1).plus(sum).toNumber()
+            }
         }
         return sum
-    })
+    }, [tokens])
     const [ refreshing, setRefreshing ] = useState<boolean>(false)
 
-    // useEffect(() => {
-    //     dispatch(getBalance())
-    // }, [selectedNetwork, selectedWallet])
+    useEffect(() => {
+        console.log('getBalance prepare: ')
+        dispatch(getBalance(() => {
+            setRefreshing(false)
+        }) as any)
+    }, [selectedNetwork, selectedWallet])
     
     return (
         <>
@@ -138,10 +141,10 @@ function Home() {
                                 progressBackgroundColor={'#ffffff'}
                                 refreshing={refreshing} 
                                 onRefresh={() => {
-                                    // setRefreshing(true)
-                                    // dispatch(getBalance(() => {
-                                    //     setRefreshing(false)
-                                    // }))
+                                    setRefreshing(true)
+                                    dispatch(getBalance(() => {
+                                        setRefreshing(false)
+                                    }) as any)
                                 }} 
                             />
                         }>
@@ -164,7 +167,7 @@ function Home() {
                                     </Pressable> : <></>
                                 }
                                 <Text style={tw`text-white text-3xl font-bold`}>
-                                    ${totalBalance ? new Decimal(totalBalance).toFixed(8).toString() : '0.00'}
+                                    ${totalBalance ? +new Decimal(totalBalance).toFixed(8) : '0.00'}
                                 </Text>
                             </View>
                             <View 
@@ -184,7 +187,7 @@ function Home() {
                                 <View style={{ width: 0.5, height: '60%', backgroundColor: 'rgba(255,255,255,0.5)'}}></View>
                                 <Pressable 
                                     onPress={() => {
-                                        Alert.alert('收款')
+                                        navigation.push('receive')
                                     }}
                                     style={tw`flex-1 py-2`}>
                                     <Text style={tw`text-center text-white text-base`}>收款</Text>
@@ -217,10 +220,10 @@ function Home() {
                                         <Text style={tw`text-black text-xl`}>{item.symbol}</Text>
                                         <View style={tw`flex-1`}>
                                             <Text style={tw`text-right text-black text-xl`}>
-                                                {parseFloat(new Decimal(item.balance ?? '0').toFixed(8))}
+                                                {parseFloat(new Decimal(item.balance || '0').toFixed(8))}
                                             </Text>
                                             <Text style={tw`text-right text-gray-400`}>
-                                                ${parseFloat(new Decimal(item.balance ?? '0').times(rate[item.symbol] ?? 1).toFixed(8))}
+                                                ${parseFloat(new Decimal(item.balance || '0').times(rate[item.symbol] ?? 1).toFixed(8))}
                                             </Text>
                                         </View>
                                     </View>

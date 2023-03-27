@@ -6,8 +6,8 @@ import { useDispatch } from "react-redux"
 import tw from "twrnc"
 // import Icon from "react-native-vector-icons/Ionicons"
 import lodash from 'lodash'
-import { createWallet } from "../../store/actions/walletAction"
 import { ActionContext } from "."
+import { createWallet } from "../../store/reducers/walletSlice"
 
 export interface FromGenerateMnemobicParams {
     mnemonic: string[]
@@ -103,13 +103,13 @@ function ConfirmMnemonic() {
                     disabled={selected.join('') !== mnemonic.join('')}
                     onPress={() => {
                         try {
-                            // const isSelect = !(context && context.action === 'back')
-                            // dispatch(createWallet(mnemonic.join(' '), isSelect))
-                            // if (context && context.action === 'back') {
-                            //     navigation.getParent()?.goBack()
-                            // } else {
-                            //     navigation.replace('main')
-                            // }
+                            const isSelect = !(context && context.action === 'back')
+                            dispatch(createWallet({ mnemonic: mnemonic.join(' '), selected: isSelect }))
+                            if (context && context.action === 'back') {
+                                navigation.getParent()?.goBack()
+                            } else {
+                                navigation.replace('main')
+                            }
                         } catch (error: any) {
                             console.log(error)
                         }

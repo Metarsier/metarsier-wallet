@@ -3,10 +3,12 @@ import BN from 'bn.js'
 import bs58 from 'bs58'
 import CryptoJS from 'crypto-js'
 import { Buffer } from 'buffer'
-import { generateMnemonic, mnemonicToSeedSync } from '../utils/bip39'
+import * as bip39 from 'bip39'
+import { mnemonicToSeedSync } from '../utils/bip39'
 import { keccak256, sha256, ripemd160, isValidMnemonic, randomBytes } from "ethers/lib/utils"
 import { hexStrToBuf, uuid } from "."
 import { CHAIN_COINTYPE } from '../config'
+import { ethers } from 'ethers'
 
 const secp256k1 = new ec('secp256k1')
 const n = secp256k1.curve.n
@@ -152,6 +154,12 @@ const getAddress = (privateKey: Buffer, coinType: number = 0) => {
     return address
 }
 
+function generateMnemonic() {
+    const wallet = ethers.Wallet.createRandom()
+    // console.log(wallet)
+    return wallet.mnemonic.phrase
+}
+
 interface CreateHDWalletProps {
     mnemonic?: string, 
     index?: number
@@ -162,9 +170,12 @@ interface CreateHDWalletProps {
  * @returns 
  */
  export function createHDWallet({ mnemonic, index = 0 }: CreateHDWalletProps): HDWallet {
+    mnemonic = mnemonic?.trim()
     if (mnemonic && !isValidMnemonic(mnemonic)) throw new Error("助记词无效")
     if (!mnemonic) {
+        console.log('start: ')
         mnemonic = generateMnemonic()
+        console.log('end: ', mnemonic)
     }
     const seed: Buffer = mnemonicToSeedSync(mnemonic)
     if (seed.length < 16)
