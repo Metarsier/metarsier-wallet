@@ -150,14 +150,14 @@ function HDWalletInfo() {
                                 }
                                 <Pressable 
                                     onPress={() => {
-                                        Clipboard.setString(hdWallet.mnemonic?.phrase ?? '')
+                                        Clipboard.setString(hdWallet.mnemonic ?? '')
                                         Toast.show('复制成功', {
                                             position: Toast.positions.CENTER,
                                             shadow: false
                                         })
                                     }}>
                                     <Text style={tw`text-base`}>
-                                        {hdWallet.mnemonic?.phrase}
+                                        {hdWallet.mnemonic}
                                     </Text>
                                 </Pressable>
                             </View>

@@ -24,14 +24,14 @@ export const hexStrToBuf = (str: string): Buffer => {
     return buf
 }
 
-export function createWalletByMnemonic(wallets: HDWallet[], mnemonic?: string): HDWallet[] {
+export async function createWalletByMnemonic(wallets: HDWallet[], mnemonic?: string) {
     let index = 0
     const roots = wallets.filter((item: HDWallet) => item.type === -1)
     if (roots.length) {
         const maxIndex = Math.max(...roots.map((item: HDWallet) => item.index))
         index = maxIndex + 1
     }
-    const root: HDWallet = createHDWallet({ mnemonic, index })
+    const root: HDWallet = await createHDWallet({ mnemonic, index })
     // 默认创建以太坊钱包和波场
     // const btc = deriveWallet(root, 'Bitcoin')
     const eth = deriveWallet(root, 'Ethereum')

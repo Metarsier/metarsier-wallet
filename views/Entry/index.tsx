@@ -1,11 +1,13 @@
 import { ParamListBase, useNavigation } from "@react-navigation/core"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { ethers } from "ethers"
 import React from "react"
 import { Pressable, Text, View } from "react-native"
 import { useDispatch } from "react-redux"
 import tw from "twrnc"
 import { displayName as appName } from '../../app.json'
 import { getNetworks, getTokens } from "../../store/reducers/walletSlice"
+import { generateMnemonic, getSeedByMnemonic, getSeedFromMnemonic } from "../../utils/wallet"
 
 function Entry() {
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
@@ -37,7 +39,21 @@ function Entry() {
                     <Text style={tw`text-purple-600 text-lg text-center`}>使用私钥导入</Text>
                 </Pressable>
                 <Pressable 
-                    onPress={() => {
+                    onPress={async () => {
+                        // const start = Date.now()
+                        // const mnemonic = await generateMnemonic()
+                        // const end = Date.now()
+                        // console.log("mnemonic time: ", (end - start) + ' ms')
+                        // const start2 = Date.now()
+                        // const seedHex = await getSeedFromMnemonic(mnemonic)
+                        // const end2 = Date.now()
+                        // console.log('seed: ', seedHex)
+                        // console.log("seed1 time: ", (end2 - start2) + ' ms')
+                        // const start3 = Date.now()
+                        // const seedStr = ethers.utils.mnemonicToSeed(mnemonic)
+                        // console.log('seed: ', seedStr)
+                        // const end3 = Date.now()
+                        // console.log("seed2 time: ", (end3 - start3) + ' ms')
                         dispatch(getNetworks() as any)
 		                dispatch(getTokens() as any)
                         navigation.push('addWallet')

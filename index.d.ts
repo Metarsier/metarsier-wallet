@@ -2,9 +2,9 @@ declare module "react-native-randombytes" {
     export const randomBytes: (n: number) => Buffer
 }
 
-interface Mnemonic {
-    locale: string,
-    phrase: string
+interface MnemonicWithSeed {
+    mnemonic: string,
+    seedHex: string
 }
 
 interface HDWallet {
@@ -16,7 +16,7 @@ interface HDWallet {
     compressPublicKey: string,
     address: string, 
     chainCode: string, 
-    mnemonic?: Mnemonic, 
+    mnemonic?: string, 
     path?: string,
     type: number,
     index: number,
@@ -53,9 +53,14 @@ interface ContractToken {
     updateTime: Date
 }
 
-interface CreateWalletPayload {
+interface CreateWalletParams {
     mnemonic?: string,
     selected?: boolean
+}
+
+interface CreateWalletPayload {
+    selected?: boolean,
+    wallets: HDWallet[]
 }
 
 interface ImportWalletByPrivateKeyPayload {

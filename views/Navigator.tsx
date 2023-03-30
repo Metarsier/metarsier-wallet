@@ -50,7 +50,9 @@ function Navigator() {
 					<Stack.Screen 
 						name="receive" 
 						component={Receive} 
-						options={{ headerTitle: '收款' }} 
+						options={{ 
+							headerShown: false
+						}} 
 					/>
 					<Stack.Screen 
 						name="wallets" 

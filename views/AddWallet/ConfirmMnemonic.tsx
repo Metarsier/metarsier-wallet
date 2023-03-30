@@ -104,7 +104,7 @@ function ConfirmMnemonic() {
                     onPress={() => {
                         try {
                             const isSelect = !(context && context.action === 'back')
-                            dispatch(createWallet({ mnemonic: mnemonic.join(' '), selected: isSelect }))
+                            dispatch(createWallet({ mnemonic: mnemonic.join(' '), selected: isSelect }) as any)
                             if (context && context.action === 'back') {
                                 navigation.getParent()?.goBack()
                             } else {

@@ -41,6 +41,15 @@ export const getNetworks = createAsyncThunk(
     }
 )
 
+export const createWallet = createAsyncThunk(
+    'wallet/createWallet',
+    async ({ mnemonic, selected }: CreateWalletParams, thunkAPI) => {
+        const rootState = thunkAPI.getState() as RootState
+        const wallets = await createWalletByMnemonic(rootState.wallet.wallets, mnemonic)
+        return { wallets, selected } as CreateWalletPayload
+    }
+)
+
 
 
 export const getBalance = createAsyncThunk(
@@ -123,22 +132,6 @@ const walletSlice = createSlice({
     name: "wallet",
     initialState,
     reducers: {
-        createWallet: (state, action: PayloadAction<CreateWalletPayload>) => {
-            const networks: Network[] = state.networks
-            console.log(action.payload.mnemonic)
-            const wallets: HDWallet[] = createWalletByMnemonic(state.wallets, action.payload.mnemonic)
-            if (action.payload.selected) {
-                const wallet = wallets[1]  // 默认选择 Ethereum 钱包
-                state.selectedWallet = wallet
-                for (let i = 0; i < networks.length; i++) {
-                    const network = networks[i]
-                    if (wallet.chain?.toLowerCase() === network.shortName.toLowerCase()) {
-                        state.selectedNetwork = network
-                    }
-                }
-            }
-            state.wallets = [ ...state.wallets, ...wallets ]
-        },
         importWalletByPrivateKey: (state, action: PayloadAction<ImportWalletByPrivateKeyPayload>) => {
             const networks: Network[] = state.networks
             const wallets: HDWallet[] = state.wallets.filter((item: HDWallet) => item.type !== -1 && !item.parentId && item.chain === action.payload.chain)
@@ -268,11 +261,24 @@ const walletSlice = createSlice({
         builder.addCase(getBalance.fulfilled, (state, action: PayloadAction<ContractToken[]>) => {
             state.tokens = [ ...action.payload ]
         })
+        builder.addCase(createWallet.fulfilled, (state, action: PayloadAction<CreateWalletPayload>) => {
+            const networks: Network[] = state.networks
+            if (action.payload.selected) {
+                const wallet = action.payload.wallets[1]  // 默认选择 Ethereum 钱包
+                state.selectedWallet = wallet
+                for (let i = 0; i < networks.length; i++) {
+                    const network = networks[i]
+                    if (wallet.chain?.toLowerCase() === network.shortName.toLowerCase()) {
+                        state.selectedNetwork = network
+                    }
+                }
+            }
+            state.wallets = [ ...state.wallets, ...action.payload.wallets ]
+        })
     },
 })
 
 export const { 
-    createWallet,
     importWalletByPrivateKey,
     addChildWallet, 
     changeWallet,

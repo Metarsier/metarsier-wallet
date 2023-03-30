@@ -1,6 +1,7 @@
 PODS:
   - boost (1.76.0)
   - CocoaAsyncSocket (7.6.5)
+  - CryptoSwift (1.3.8)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.71.4)
   - FBReactNativeSpec (0.71.4):
@@ -77,7 +78,11 @@ PODS:
     - hermes-engine/Pre-built (= 0.71.4)
   - hermes-engine/Pre-built (0.71.4)
   - libevent (2.1.12)
+  - MnemonicKit (1.3.12):
+    - CryptoSwift (~> 1.3.0)
   - OpenSSL-Universal (1.1.1100)
+  - PotatoCrypto (1.0.4):
+    - React
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -468,7 +473,9 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
+  - MnemonicKit
   - OpenSSL-Universal (= 1.1.1100)
+  - PotatoCrypto (from `../node_modules/react-native-potato-crypto`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -511,6 +518,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - CocoaAsyncSocket
+    - CryptoSwift
     - Flipper
     - Flipper-Boost-iOSX
     - Flipper-DoubleConversion
@@ -522,6 +530,7 @@ SPEC REPOS:
     - FlipperKit
     - fmt
     - libevent
+    - MnemonicKit
     - OpenSSL-Universal
     - SocketRocket
     - YogaKit
@@ -539,6 +548,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
+  PotatoCrypto:
+    :path: "../node_modules/react-native-potato-crypto"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -615,6 +626,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  CryptoSwift: 01b0f0cba1d5c212e5a335ff6c054fb75a204f00
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 446e84642979fff0ba57f3c804c2228a473aeac2
   FBReactNativeSpec: 241709e132e3bf1526c1c4f00bc5384dd39dfba9
@@ -631,7 +643,9 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: a1f157c49ea579c28b0296bda8530e980c45bdb3
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  MnemonicKit: 5d304723a0fe426c2ee7ac70de3b352f4f890331
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
+  PotatoCrypto: 24b66968cc8c0f114576576674ee7959ef5b8444
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 5a024fdf458fa8c0d82fc262e76f982d4dcdecdd
   RCTTypeSafety: b6c253064466411c6810b45f66bc1e43ce0c54ba
@@ -671,6 +685,6 @@ SPEC CHECKSUMS:
   Yoga: 79dd7410de6f8ad73a77c868d3d368843f0c93e0
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 0947c87eddace2fc0e0458b6f1fd08dfb6809a7d
+PODFILE CHECKSUM: 5814fcb25f3b76653f6498138c6d0feabf83e6e0
 
 COCOAPODS: 1.11.3

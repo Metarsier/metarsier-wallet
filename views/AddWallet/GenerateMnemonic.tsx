@@ -15,14 +15,13 @@ function GenerateMnemonic() {
     const [ loading, setLoading ] = useState<boolean>(true)
 
     useEffect(() => {
-        setTimeout(() => {
-            const list = createWalletByMnemonic(wallets)
+        createWalletByMnemonic(wallets).then((list: HDWallet[]) => {
             const root = list[0]
-            if (root && root.mnemonic && root.mnemonic.phrase) {
-                setMnemonic(root.mnemonic.phrase.split(' '))
+            if (root && root.mnemonic && root.mnemonic) {
+                setMnemonic(root.mnemonic.split(' '))
                 setLoading(false)
             }
-        }, 0)
+        })
     }, [])
 
     return (

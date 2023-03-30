@@ -22,6 +22,7 @@ if linkage != nil
 end
 
 target 'metabit' do
+  pod "MnemonicKit"
   config = use_native_modules!
 
   # Flags change depending on the env values.

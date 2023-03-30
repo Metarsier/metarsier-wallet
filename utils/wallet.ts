@@ -3,9 +3,8 @@ import BN from 'bn.js'
 import bs58 from 'bs58'
 import CryptoJS from 'crypto-js'
 import { Buffer } from 'buffer'
-import * as bip39 from 'bip39'
-import { mnemonicToSeedSync } from '../utils/bip39'
-import { keccak256, sha256, ripemd160, isValidMnemonic, randomBytes } from "ethers/lib/utils"
+import { NativeModules } from "react-native"
+import { keccak256, sha256, ripemd160, isValidMnemonic } from "ethers/lib/utils"
 import { hexStrToBuf, uuid } from "."
 import { CHAIN_COINTYPE } from '../config'
 import { ethers } from 'ethers'
@@ -154,10 +153,28 @@ const getAddress = (privateKey: Buffer, coinType: number = 0) => {
     return address
 }
 
-function generateMnemonic() {
-    const wallet = ethers.Wallet.createRandom()
-    // console.log(wallet)
-    return wallet.mnemonic.phrase
+export function generateMnemonic(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        NativeModules.MnemonicTools.generate((mnemonic: string) => {
+            if (mnemonic) {
+                resolve(mnemonic)
+            } else {
+                reject("Generate failed")
+            }
+        })
+    })
+}
+
+export function getSeedFromMnemonic(mnemonic: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        NativeModules.MnemonicTools.getSeedFromMnemonic(mnemonic, (seedHex: string) => {
+            if (seedHex) {
+                resolve(seedHex)
+            } else {
+                reject("Get seed failed")
+            }
+        })
+    })
 }
 
 interface CreateHDWalletProps {
@@ -169,15 +186,15 @@ interface CreateHDWalletProps {
  * @param mnemonic  助记词
  * @returns 
  */
- export function createHDWallet({ mnemonic, index = 0 }: CreateHDWalletProps): HDWallet {
+ export async function createHDWallet({ mnemonic, index = 0 }: CreateHDWalletProps) {
     mnemonic = mnemonic?.trim()
     if (mnemonic && !isValidMnemonic(mnemonic)) throw new Error("助记词无效")
+    let seed: Buffer
     if (!mnemonic) {
-        console.log('start: ')
-        mnemonic = generateMnemonic()
-        console.log('end: ', mnemonic)
+        mnemonic = await generateMnemonic()
     }
-    const seed: Buffer = mnemonicToSeedSync(mnemonic)
+    const seedHex = await getSeedFromMnemonic(mnemonic)
+    seed = hexStrToBuf(seedHex)
     if (seed.length < 16)
         throw new TypeError('Seed should be at least 128 bits')
     if (seed.length > 64)
@@ -196,10 +213,7 @@ interface CreateHDWalletProps {
         compressPublicKey: '0x' + compressPublicKey.toString('hex'),
         chainCode: '0x' + IR.toString('hex'),
         path: 'm',
-        mnemonic: {
-            phrase: mnemonic,
-            locale: 'en'
-        },
+        mnemonic,
         name: 'HD Wallet',
         address: '',
         type: -1,

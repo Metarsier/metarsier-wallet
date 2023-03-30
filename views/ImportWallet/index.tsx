@@ -97,7 +97,7 @@ function ImportWallet() {
                             const selected = !(action && action === 'back')
                             if (type === 'mnemonic') {
                                 const mnemonic = text.trim()
-                                dispatch(createWallet({ mnemonic, selected }))
+                                dispatch(createWallet({ mnemonic, selected }) as any)
                             } else if (type === 'privateKey') {
                                 const privateKey = text.trim()
                                 dispatch(importWalletByPrivateKey({ privateKey, chain, selected }))
@@ -108,7 +108,7 @@ function ImportWallet() {
                                 } else {
                                     navigation.replace('main')
                                 }
-                            }, 300)
+                            }, 500)
                         } catch (error: any) {
                             console.log(error)
                             setToastText(JSON.stringify(error))
