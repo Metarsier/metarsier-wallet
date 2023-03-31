@@ -13,6 +13,8 @@ import Main from "./Main";
 import Networks from "./Networks";
 import Receive from "./Receive";
 import Scan from "./Scan";
+import Transfer from "./Transfer";
+import SelectToken from "./Transfer/SelectToken";
 import Wallets from "./Wallets";
 import HDWalletInfo from "./Wallets/HDWalletInfo";
 import SelectWallet from "./Wallets/SelectWallet";
@@ -122,6 +124,21 @@ function Navigator() {
 							presentation: 'modal',
 							headerShown: false
 						}} 
+					/>
+					<Stack.Screen 
+						name="selectToken" 
+						component={SelectToken} 
+						options={{ 
+							presentation: 'modal',
+							headerShown: false
+						}} 
+					/>
+					<Stack.Screen 
+						name="transfer" 
+						component={Transfer}
+						options={{ 
+							headerShown: false
+						}}
 					/>
 				</Stack.Navigator>
 			</NavigationContainer>

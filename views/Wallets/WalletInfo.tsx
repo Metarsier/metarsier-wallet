@@ -234,8 +234,12 @@ function WalletInfo() {
                         <TextInput
                             style={{
                                 ...tw`h-14 p-3 text-base rounded-md bg-gray-100 border-gray-200`,
-                                borderWidth: 0.5
+                                borderWidth: 0.5,
+                                lineHeight: 20
                             }}
+                            autoCapitalize={'none'}
+                            autoCorrect={false}
+                            autoComplete={'off'}
                             onChangeText={t => {
                                 setAlias(t)
                             }}

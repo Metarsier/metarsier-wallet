@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { 
-    Alert,
     Image,
     Pressable,
     RefreshControl,
@@ -179,7 +178,7 @@ function Home() {
                                 }}>
                                 <Pressable 
                                     onPress={() => {
-                                        Alert.alert('转账')
+                                        navigation.push('selectToken')
                                     }}
                                     style={tw`flex-1 py-2`}>
                                     <Text style={tw`text-center text-white text-base`}>转账</Text>
