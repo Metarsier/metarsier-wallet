@@ -53,7 +53,6 @@ function Home() {
     const [ refreshing, setRefreshing ] = useState<boolean>(false)
 
     useEffect(() => {
-        console.log('getBalance prepare: ')
         dispatch(getBalance(() => {
             setRefreshing(false)
         }) as any)
@@ -178,6 +177,12 @@ function Home() {
                                 }}>
                                 <Pressable 
                                     onPress={() => {
+                                        if (selectedNetwork.chainType !== 60) {
+                                            return Toast.show('暂未开放', {
+                                                position: Toast.positions.CENTER,
+                                                shadow: false
+                                            })
+                                        }
                                         navigation.push('selectToken')
                                     }}
                                     style={tw`flex-1 py-2`}>

@@ -1,6 +1,6 @@
-import { useRoute } from "@react-navigation/native"
+import { ParamListBase, useNavigation, useRoute } from "@react-navigation/native"
 import { useEffect, useState } from "react"
-import { Pressable, SafeAreaView, ScrollView, Text, TextInput, View } from "react-native"
+import { ActivityIndicator, Pressable, SafeAreaView, ScrollView, Text, TextInput, View } from "react-native"
 import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context"
 import { getDefaultHeaderHeight } from '@react-navigation/elements'
 import tw from "twrnc"
@@ -11,6 +11,8 @@ import { useSelector } from "react-redux"
 import { RootState } from "../../store"
 import Toast from "react-native-root-toast"
 import { isValidAddress } from "@ethereumjs/util"
+import { transfer } from "../../utils/ethereum"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
 function Transfer() {
     const frame = useSafeAreaFrame()
@@ -18,13 +20,21 @@ function Transfer() {
     const defaultHeight = getDefaultHeaderHeight(frame, false, insets.top)
     const route = useRoute()
     const token = route.params as ContractToken
+    const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
     const selectedNetwork: Network = useSelector((state: RootState) => state.wallet.selectedNetwork)
     const selectedWallet: HDWallet = useSelector((state: RootState) => state.wallet.selectedWallet)
     const [ address, setAddress ] = useState<string>('')
     const [ amount, setAmount ] = useState<string>('')
     const [ showPayModal, setShowPayModal ] = useState<boolean>(false)
+    const [ loading, setLoading ] = useState<boolean>(false)
     return (
         <>
+            {
+                loading ? 
+                <ActivityIndicator 
+                    style={tw`absolute top-0 left-0 right-0 bottom-0 z-50 bg-white bg-opacity-50`} 
+                /> : <></>
+            }
             <View style={tw`absolute top-0 left-0 right-0 bottom-0`}>
                 <HeaderBar title={'转账'} />
                 <View 
@@ -163,9 +173,19 @@ function Transfer() {
                             <Text style={tw`text-purple-600 text-lg text-center`}>取消</Text>
                         </Pressable>
                         <Pressable 
-                            onPress={() => {
-                                // dispatch(setWalletAlias({ id: hdWallet.id, alias }))
+                            onPress={async () => {
+                                setLoading(true)
                                 setShowPayModal(false)
+                                const hash = await transfer(selectedWallet, selectedNetwork, token, address, amount)
+                                console.log('hash: ', hash)
+                                if (hash) {
+                                    Toast.show('成功', {
+                                        position: Toast.positions.CENTER,
+                                        shadow: false
+                                    })
+                                    navigation.push('transferSuccess')
+                                }
+                                setLoading(false)
                             }}
                             style={tw`flex-1 py-2 border border-purple-600 bg-purple-600 rounded-full`}>
                             <Text style={tw`text-white text-lg text-center`}>确定</Text>

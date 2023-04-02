@@ -15,6 +15,7 @@ import Receive from "./Receive";
 import Scan from "./Scan";
 import Transfer from "./Transfer";
 import SelectToken from "./Transfer/SelectToken";
+import TransferSuccess from "./Transfer/TransferSuccess";
 import Wallets from "./Wallets";
 import HDWalletInfo from "./Wallets/HDWalletInfo";
 import SelectWallet from "./Wallets/SelectWallet";
@@ -136,6 +137,13 @@ function Navigator() {
 					<Stack.Screen 
 						name="transfer" 
 						component={Transfer}
+						options={{ 
+							headerShown: false
+						}}
+					/>
+					<Stack.Screen 
+						name="transferSuccess" 
+						component={TransferSuccess}
 						options={{ 
 							headerShown: false
 						}}

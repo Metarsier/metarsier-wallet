@@ -137,7 +137,7 @@ const getTRONAddress = (publicKey: Buffer): string => {
     return bs58.encode(address)
 }
 
-const getAddress = (privateKey: Buffer, coinType: number = 0) => {
+export const getAddress = (privateKey: Buffer, coinType: number = 0) => {
     let { publicKey, compressPublicKey } = getPubkeyFromPrikey(privateKey)
     if (publicKey.length === 65) {
         publicKey = publicKey.slice(1)
