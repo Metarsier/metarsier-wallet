@@ -12,6 +12,7 @@ import ImportWallet from "./ImportWallet";
 import Main from "./Main";
 import Networks from "./Networks";
 import Receive from "./Receive";
+import Record from "./Record";
 import Scan from "./Scan";
 import Transfer from "./Transfer";
 import SelectToken from "./Transfer/SelectToken";
@@ -144,6 +145,13 @@ function Navigator() {
 					<Stack.Screen 
 						name="transferSuccess" 
 						component={TransferSuccess}
+						options={{ 
+							headerShown: false
+						}}
+					/>
+					<Stack.Screen 
+						name="record" 
+						component={Record}
 						options={{ 
 							headerShown: false
 						}}

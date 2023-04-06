@@ -81,8 +81,6 @@ PODS:
   - MnemonicKit (1.3.12):
     - CryptoSwift (~> 1.3.0)
   - OpenSSL-Universal (1.1.1100)
-  - PotatoCrypto (1.0.4):
-    - React
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -475,7 +473,6 @@ DEPENDENCIES:
   - libevent (~> 2.1.12)
   - MnemonicKit
   - OpenSSL-Universal (= 1.1.1100)
-  - PotatoCrypto (from `../node_modules/react-native-potato-crypto`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -548,8 +545,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
-  PotatoCrypto:
-    :path: "../node_modules/react-native-potato-crypto"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -645,7 +640,6 @@ SPEC CHECKSUMS:
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   MnemonicKit: 5d304723a0fe426c2ee7ac70de3b352f4f890331
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  PotatoCrypto: 24b66968cc8c0f114576576674ee7959ef5b8444
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 5a024fdf458fa8c0d82fc262e76f982d4dcdecdd
   RCTTypeSafety: b6c253064466411c6810b45f66bc1e43ce0c54ba

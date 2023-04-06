@@ -3,7 +3,7 @@ import React, { useState } from "react"
 import { Alert, Pressable, Text, View } from "react-native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import tw from "twrnc"
-// import Icon from "react-native-vector-icons/Ionicons"
+import { Icon } from 'react-native-eva-icons'
 import { CHAINS } from "../../config"
 import { useDispatch } from "react-redux"
 import { useRoute } from "@react-navigation/native"
@@ -22,7 +22,12 @@ function DeriveWallet() {
                 <Pressable 
                     onPress={() => navigation.goBack()}
                     style={tw`w-12 flex justify-center items-center`}>
-                    {/* <Icon name="chevron-back" size={24} color={getColor('purple-600')} /> */}
+                    <Icon 
+                        name="chevron-left-outline" 
+                        width={30} 
+                        height={30} 
+                        fill={tw.color(`purple-600`)}
+                    />
                 </Pressable>
                 <View style={tw`flex-1 flex justify-center`}>
                     <Text style={tw`text-base text-center text-black`}>

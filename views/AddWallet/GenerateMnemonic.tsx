@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, Text, View } from "react-native"
 import { useSelector } from "react-redux"
 import tw from "twrnc"
 import { RootState } from "../../store"
-// import Icon from "react-native-vector-icons/Ionicons"
+import { Icon } from 'react-native-eva-icons'
 import { createWalletByMnemonic } from "../../utils"
 
 function GenerateMnemonic() {
@@ -30,7 +30,12 @@ function GenerateMnemonic() {
                 <Pressable 
                     onPress={() => navigation.goBack()}
                     style={tw`w-12 flex justify-center items-center`}>
-                    {/* <Icon name="chevron-back" size={24} color={getColor('purple-600')} /> */}
+                    <Icon 
+                        name="chevron-left-outline" 
+                        width={30} 
+                        height={30} 
+                        fill={tw.color(`purple-600`)}
+                    />
                 </Pressable>
                 <View style={tw`flex-1 flex justify-center`}>
                     <Text style={tw`text-base text-center text-white`}>钱包</Text>

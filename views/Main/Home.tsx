@@ -177,12 +177,6 @@ function Home() {
                                 }}>
                                 <Pressable 
                                     onPress={() => {
-                                        if (selectedNetwork.chainType !== 60) {
-                                            return Toast.show('暂未开放', {
-                                                position: Toast.positions.CENTER,
-                                                shadow: false
-                                            })
-                                        }
                                         navigation.push('selectToken')
                                     }}
                                     style={tw`flex-1 py-2`}>
@@ -205,8 +199,11 @@ function Home() {
                             }}>
                             {
                                 tokens.map((item: ContractToken) => (
-                                    <View 
+                                    <Pressable 
                                         key={item.symbol} 
+                                        onPress={() => {
+                                            navigation.push('record', item)
+                                        }}
                                         style={{
                                             ...tw`flex flex-row items-center p-4 bg-white rounded-lg mb-3`,
                                             shadowColor: '#000000',
@@ -230,7 +227,7 @@ function Home() {
                                                 ${parseFloat(new Decimal(item.balance || '0').times(rate[item.symbol] ?? 1).toFixed(8))}
                                             </Text>
                                         </View>
-                                    </View>
+                                    </Pressable>
                                 ))
                             }
                         </View>

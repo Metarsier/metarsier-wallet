@@ -62,3 +62,7 @@ export async function transfer(
     const res = await broadTx(provider, serializedTx)
     return res.hash
 }
+
+function getTransactions() {
+    
+}

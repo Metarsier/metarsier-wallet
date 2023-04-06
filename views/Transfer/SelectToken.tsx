@@ -6,11 +6,13 @@ import { Icon } from 'react-native-eva-icons'
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../store"
 import { useMemo, useState } from "react"
+import Decimal from "decimal.js-light"
 
 function SelectToken() {
     const dispatch = useDispatch()
     const isDarkMode = useColorScheme() === 'dark'
     const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>()
+    const rate: any = useSelector((state: RootState) => state.rate)
     const selectedNetwork: Network = useSelector((state: RootState) => state.wallet.selectedNetwork)
     const tokens: ContractToken[] = useSelector((state: RootState) => state.wallet.tokens)
     const [ keywords, setKeywords ] = useState<string>('')
@@ -93,9 +95,17 @@ function SelectToken() {
                                                 source={{ uri: item.logo }} 
                                             />
                                         </View>
-                                        <View style={tw`flex-1`}>
+                                        <View>
                                             <Text style={tw`text-base`}>{item.name}</Text>
                                             <Text style={tw`text-gray-400`}>{item.symbol}</Text>
+                                        </View>
+                                        <View style={tw`flex-1 pr-3`}>
+                                            <Text style={tw`text-right text-black text-lg`}>
+                                                {parseFloat(new Decimal(item.balance || '0').toFixed(8))}
+                                            </Text>
+                                            <Text style={tw`text-right text-gray-400`}>
+                                                ${parseFloat(new Decimal(item.balance || '0').times(rate[item.symbol] ?? 1).toFixed(8))}
+                                            </Text>
                                         </View>
                                     </Pressable>
                                 ))

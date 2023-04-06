@@ -11,7 +11,8 @@ import { useSelector } from "react-redux"
 import { RootState } from "../../store"
 import Toast from "react-native-root-toast"
 import { isValidAddress } from "@ethereumjs/util"
-import { transfer } from "../../utils/ethereum"
+import { transfer as transferEthereum } from "../../utils/ethereum"
+import { transfer as transferTron } from "../../utils/tron"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 
 function Transfer() {
@@ -176,16 +177,21 @@ function Transfer() {
                             onPress={async () => {
                                 setLoading(true)
                                 setShowPayModal(false)
-                                const hash = await transfer(selectedWallet, selectedNetwork, token, address, amount)
-                                console.log('hash: ', hash)
+                                let hash = ''
+                                if (selectedNetwork.chainType === 60) {
+                                    hash = await transferEthereum(selectedWallet, selectedNetwork, token, address, amount)
+                                } else if (selectedNetwork.chainType === 195) {
+                                    hash = await transferTron(selectedWallet, selectedNetwork, token, address, amount)
+                                }
+                                setLoading(false)
                                 if (hash) {
+                                    console.log('hash: ', hash)
                                     Toast.show('成功', {
                                         position: Toast.positions.CENTER,
                                         shadow: false
                                     })
                                     navigation.push('transferSuccess')
                                 }
-                                setLoading(false)
                             }}
                             style={tw`flex-1 py-2 border border-purple-600 bg-purple-600 rounded-full`}>
                             <Text style={tw`text-white text-lg text-center`}>确定</Text>

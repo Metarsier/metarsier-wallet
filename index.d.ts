@@ -120,8 +120,8 @@ declare module "tronweb" {
         timeUntilNextVoteCycle(callback?: any): Promise<any>;
         getContract(contractAddress: any, callback?: any): Promise<any>;
         verifyMessage(message: any, signature: any, address: any, useTronHeader: any, callback?: any): Promise<any>;
-        sign(transaction: any, privateKey: any, useTronHeader: boolean, callback?: any): Promise<any>;
-        sendRawTransaction(signedTransaction: any, options: any, callback?: any): Promise<any>;
+        sign(transaction: any, privateKey?: any, useTronHeader?: boolean, callback?: any): Promise<any>;
+        sendRawTransaction(signedTransaction: any, options?: any, callback?: any): Promise<any>;
         sendTransaction(to: any, amount: any, options: any, callback?: any): Promise<any>;
         sendToken(to: any, amount: any, tokenID: any, options: any, callback?: any): Promise<any>;
         freezeBalance(amount: any, duration: number, resource: string, options: any, callback?: any): Promise<any>;
@@ -157,6 +157,7 @@ declare module "tronweb" {
         purchaseAsset(...args: any[]): Promise<any>;
         createAsset(...args: any[]): Promise<any>;
         updateAsset(...args: any[]): Promise<any>;
+        triggerSmartContract(contractAddress: string, functions: string, options: any, parameter: any);
         createProposal(parameters: any, issuerAddress: any, callback?: any): Promise<any>;
         deleteProposal(proposalID: any, issuerAddress: any, callback?: any): Promise<any>;
         voteProposal(proposalID: any, isApproval: any, voterAddress: any, callback?: any): Promise<any>;
