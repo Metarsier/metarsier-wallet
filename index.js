@@ -1,6 +1,7 @@
 /**
  * @format
  */
+import 'react-native-reanimated'
 import { AppRegistry } from 'react-native'
 import { Provider } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"

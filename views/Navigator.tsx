@@ -50,6 +50,9 @@ function Navigator() {
 					<Stack.Screen 
 						name="scan" 
 						component={Scan} 
+						options={{ 
+							headerShown: false
+						}} 
 					/>
 					<Stack.Screen 
 						name="receive" 
